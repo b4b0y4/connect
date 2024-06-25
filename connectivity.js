@@ -1,30 +1,35 @@
 import {ethers} from "./ethers.min.js"
 
 const networkConfigs = {
-  eth: {
+  ethereum: {
     name: "Ethereum",
     rpcUrl: "https://eth.drpc.org",
     chainId: 1,
+    icon: "./logo/eth.svg",
   },
-  arb: {
+  arbitrum: {
     name: "Arbitrum",
     rpcUrl: "https://1rpc.io/arb",
     chainId: 42161,
+    icon: "./logo/arb.svg",
   },
-  op: {
+  optimism: {
     name: "Optimism",
     rpcUrl: "https://mainnet.optimism.io",
     chainId: 10,
+    icon: "./logo/op.svg",
   },
   base: {
     name: "Base",
     rpcUrl: "https://base-rpc.publicnode.com",
     chainId: 8453,
+    icon: "./logo/base.svg",
   },
   sepolia: {
     name: "Sepolia",
     rpcUrl: "https://rpc.sepolia.org",
     chainId: 11155111,
+    icon: "./logo/sepolia.svg",
   },
 }
 
@@ -34,7 +39,6 @@ const modal = document.getElementById("modal")
 const connectBtn = document.getElementById("connectBtn")
 
 const providers = []
-let currentProvider = null
 
 // Function to initialize the wallet discovery
 function onPageLoad() {
@@ -46,6 +50,10 @@ function onPageLoad() {
     // Display the wallet provider in the UI
     console.log(`Discovered provider: ${providerDetail.info.name}`)
     renderWallets()
+
+    providerDetail.provider.on("chainChanged", (chainId) => {
+      updateNetworkButton(chainId)
+    })
   })
 
   // Dispatch the request for providers
@@ -67,15 +75,14 @@ async function selectWallet(uuid) {
 
   if (selectedProvider) {
     console.log(`Selected wallet: ${selectedProvider.info.name}`)
-    currentProvider = selectedProvider.provider // Set the selected provider
 
     try {
       // Request account access if needed
       const accounts = await selectedProvider.provider.request({
         method: "eth_requestAccounts",
       })
-      const address = accounts[0]
       window.ethereum = selectedProvider.provider // Set the selected provider as the active provider
+      const address = accounts[0]
       toggleModalVisibility()
       displayTruncatedAddress(address)
       displayENSName(address)
@@ -137,7 +144,7 @@ function displayTruncatedAddress(address) {
 async function displayENSName(address) {
   try {
     const mainnetProvider = new ethers.JsonRpcProvider(
-      networkConfigs.eth.rpcUrl
+      networkConfigs.ethereum.rpcUrl
     )
 
     const ensName = await mainnetProvider.lookupAddress(address)
@@ -173,33 +180,45 @@ document.getElementById("network").addEventListener("click", () => {
   }
 })
 
-async function switchNetwork(network) {
+async function switchNetwork(currentNetwork) {
   dropdownMenu.style.visibility = "hidden"
-  if (!currentProvider) {
-    console.error("No wallet provider selected.")
-    return
-  }
-
   try {
-    await currentProvider.request({
+    await ethereum.request({
       method: "wallet_switchEthereumChain",
-      params: [{chainId: `0x${network.chainId.toString(16)}`}],
+      params: [{chainId: `0x${currentNetwork.chainId.toString(16)}`}],
     })
   } catch (error) {
     console.error("Error switching network:", error)
   }
 }
 
+function updateNetworkButton(chainId) {
+  const network = Object.values(networkConfigs).find(
+    (config) => config.chainId === parseInt(chainId, 16)
+  )
+
+  const networkIcon = document.getElementById("network-icon")
+  const networkName = document.getElementById("network-name")
+
+  if (network) {
+    networkIcon.src = network.icon
+    networkName.innerHTML = network.name
+  } else {
+    networkIcon.src = ""
+    networkName.innerHTML = "Wrong Network"
+  }
+}
+
 document.getElementById("ethereum").addEventListener("click", () => {
-  switchNetwork(networkConfigs.eth)
+  switchNetwork(networkConfigs.ethereum)
 })
 
 document.getElementById("arbitrum").addEventListener("click", () => {
-  switchNetwork(networkConfigs.arb)
+  switchNetwork(networkConfigs.arbitrum)
 })
 
 document.getElementById("optimism").addEventListener("click", () => {
-  switchNetwork(networkConfigs.op)
+  switchNetwork(networkConfigs.optimism)
 })
 
 document.getElementById("base").addEventListener("click", () => {

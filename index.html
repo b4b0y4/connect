@@ -10,21 +10,24 @@
 
 <body>
     <div class="connectivity">
-        <button id="network">network</button>
+        <button id="network">
+            <img id="network-icon" src="" alt="Network Icon">
+            <span id="network-name">Network</span>
+        </button>
         <button id="connectBtn">Connect Wallet</button>
     </div>
     <div class="dropdown-menu" id="dropdownMenu">
-        <button id="ethereum">Ethereum</button>
-        <button id="arbitrum">Arbitrum</button>
-        <button id="optimism">Optimism</button>
-        <button id="base">Base</button>
+        <button id="ethereum"><img src="./logo/eth.svg">Ethereum</button>
+        <button id="arbitrum"><img src="./logo/arb.svg">Arbitrum</button>
+        <button id="optimism"><img src="./logo/op.svg">Optimism</button>
+        <button id="base"><img src="./logo/base.svg">Base</button>
     </div>
 
     <div id="modalBox" class="modal-box">
         <div id="overlay" class="modal-overlay"></div>
         <div id="modal" class="modal">
             <div id="wallets"></div>
-            <button id="walletConnect"><img src="./walletConnect.svg">WalletConnect</button>
+            <button id="walletConnect"><img src="./logo/walletConnect.svg">WalletConnect</button>
         </div>
     </div>
 
