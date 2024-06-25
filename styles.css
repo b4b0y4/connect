@@ -2,7 +2,52 @@ body {
   font-family: Arial, sans-serif;
 }
 
-.modal-container {
+.connectivity button {
+  background-color: transparent;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.connectivity button:hover {
+  background-color: lightgray;
+}
+
+.dropdown-menu {
+  position: relative;
+  margin-top: 5px;
+  width: 100px;
+  box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  padding: 5px;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out;
+}
+
+#ethereum,
+#arbitrum,
+#optimism,
+#base {
+  display: block;
+  width: 100%;
+  font-size: 1em;
+  padding: 5px 10px;
+  background-color: transparent;
+  border: none;
+  border-radius: 5px;
+  text-align: left;
+  transition: background-color 0.1s ease-in-out;
+}
+
+#ethereum:hover,
+#arbitrum:hover,
+#optimism:hover,
+#base:hover {
+  background-color: lightgray;
+}
+
+.modal-box {
+  visibility: hidden;
   position: fixed;
   top: 0;
   left: 0;
@@ -15,6 +60,7 @@ body {
 }
 
 .modal-overlay {
+  visibility: hidden;
   position: absolute;
   top: 0;
   left: 0;
@@ -24,28 +70,32 @@ body {
 }
 
 .modal {
+  visibility: hidden;
+  max-width: 200px;
+  width: 100%;
   background: #fff;
   padding: 20px;
   border-radius: 5px;
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
   z-index: 1001;
 }
 
-h2 {
-  margin: 0 0 20px;
-}
-
-img {
-  margin-right: 5px;
+.modal img {
+  margin-right: 8px;
   border-radius: 5px;
-  border: 1px solid transparent;
-  background: #fff;
 }
 
-.button {
+.modal button {
   display: flex;
   align-items: center;
+  width: 100%;
   background-color: transparent;
-  margin: 5px;
+  padding: 5px;
+  margin: 10px 0;
   border-radius: 5px;
-  border: none;
+  cursor: pointer;
+}
+
+.modal button:hover {
+  background-color: lightgray;
 }

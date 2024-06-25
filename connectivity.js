@@ -1,10 +1,25 @@
-import { ethers } from "./ethers.min.js"
+import {ethers} from "./ethers.min.js"
 
 const networkConfigs = {
-  ethereum: {
+  eth: {
     name: "Ethereum",
     rpcUrl: "https://eth.drpc.org",
     chainId: 1,
+  },
+  arb: {
+    name: "Arbitrum",
+    rpcUrl: "https://1rpc.io/arb",
+    chainId: 42161,
+  },
+  op: {
+    name: "Optimism",
+    rpcUrl: "https://mainnet.optimism.io",
+    chainId: 10,
+  },
+  base: {
+    name: "Base",
+    rpcUrl: "https://base-rpc.publicnode.com",
+    chainId: 8453,
   },
   sepolia: {
     name: "Sepolia",
@@ -13,107 +28,180 @@ const networkConfigs = {
   },
 }
 
-document.getElementById("openModalBtn").addEventListener("click", () => {
-  fetch("modal.html")
-    .then((response) => response.text())
-    .then((data) => {
-      document.getElementById("modalContainer").innerHTML = data
-      document.getElementById("modalContainer").style.display = "flex"
+const modalBox = document.getElementById("modalBox")
+const overlay = document.getElementById("overlay")
+const modal = document.getElementById("modal")
+const connectBtn = document.getElementById("connectBtn")
 
-      document
-        .getElementById("disconnectBtn")
-        .addEventListener("click", disconnectWallet)
+const providers = []
+let currentProvider = null
 
-      document.querySelector(".modal-overlay").addEventListener("click", () => {
-        document.getElementById("modalContainer").style.display = "none"
+// Function to initialize the wallet discovery
+function onPageLoad() {
+  // Listener for provider announcements
+  window.addEventListener("eip6963:announceProvider", (event) => {
+    const providerDetail = event.detail
+    providers.push(providerDetail)
+
+    // Display the wallet provider in the UI
+    console.log(`Discovered provider: ${providerDetail.info.name}`)
+    renderWallets()
+  })
+
+  // Dispatch the request for providers
+  window.dispatchEvent(new Event("eip6963:requestProvider"))
+
+  // Check if there's a connected address in localStorage
+  const connectedAddress = localStorage.getItem("connectedAddress")
+  if (connectedAddress) {
+    displayTruncatedAddress(connectedAddress)
+    displayENSName(connectedAddress)
+  }
+}
+
+// Function to select a specific wallet provider by UUID
+async function selectWallet(uuid) {
+  const selectedProvider = providers.find(
+    (provider) => provider.info.uuid === uuid
+  )
+
+  if (selectedProvider) {
+    console.log(`Selected wallet: ${selectedProvider.info.name}`)
+    currentProvider = selectedProvider.provider // Set the selected provider
+
+    try {
+      // Request account access if needed
+      const accounts = await selectedProvider.provider.request({
+        method: "eth_requestAccounts",
       })
+      const address = accounts[0]
+      window.ethereum = selectedProvider.provider // Set the selected provider as the active provider
+      toggleModalVisibility()
+      displayTruncatedAddress(address)
+      displayENSName(address)
 
-      const connectMetamask = document.getElementById("connectMetamask")
-      const currentNetwork = networkConfigs.sepolia
-      let connected = false
+      localStorage.setItem("connectedAddress", address)
 
-      connectMetamask.addEventListener("click", connectWallet)
+      console.log(`Connected to ${selectedProvider.info.name}`)
+    } catch (error) {
+      console.error("User rejected the request:", error)
+    }
+  } else {
+    console.error("Wallet not found")
+  }
+}
 
-      async function connectWallet() {
-        if (!connected) {
-          connected = true
-          try {
-            await ethereum.request({ method: "eth_requestAccounts" })
-            const accounts = await ethereum.request({ method: "eth_accounts" })
-            if (accounts.length > 0) {
-              const address = accounts[0]
-              getShortAddr(address)
-              getENS(address)
-              document.getElementById("modalContainer").style.display = "none"
-            }
-          } catch (error) {
-            console.log(error)
-          }
-        }
-      }
+// Function to render the list of discovered wallet providers
+function renderWallets() {
+  const walletContainer = document.getElementById("wallets")
+  walletContainer.innerHTML = ""
 
-      function getShortAddr(address) {
-        if (!address) return
-        const truncatedAddress = `${address.substring(
-          0,
-          6
-        )}...${address.substring(address.length - 4)}`
-        document.getElementById("openModalBtn").innerHTML = truncatedAddress
-      }
+  providers.forEach((provider) => {
+    const button = document.createElement("button")
 
-      async function getENS(account) {
-        try {
-          const mainnetProvider = new ethers.JsonRpcProvider(
-            networkConfigs.ethereum.rpcUrl
-          )
-          const ensName = await mainnetProvider.lookupAddress(account)
+    // Create an image element for the wallet icon
+    const img = document.createElement("img")
+    img.src = provider.info.icon
+    img.alt = `${provider.info.name} icon`
+    img.style.width = "24px"
+    img.style.height = "24px"
+    img.style.marginRight = "8px"
 
-          if (ensName) {
-            document.getElementById("openModalBtn").innerHTML = ensName
-          }
-        } catch (error) {
-          console.log("Error getting ENS name:", error)
-        }
-      }
+    // Add the icon and the name to the button
+    button.appendChild(img)
+    button.appendChild(document.createTextNode(provider.info.name))
 
-      function disconnectWallet() {
-        connected = false
+    button.onclick = () => selectWallet(provider.info.uuid)
+    walletContainer.appendChild(button)
+  })
+}
 
-        document.getElementById("openModalBtn").innerHTML = "Connect"
-        document.getElementById("modalContainer").style.display = "none"
-        console.log("Wallet disconnected")
-      }
+// Call the onPageLoad function when the page loads
+if (
+  document.readyState === "complete" ||
+  document.readyState === "interactive"
+) {
+  onPageLoad()
+} else {
+  window.addEventListener("DOMContentLoaded", onPageLoad)
+}
 
-      async function switchNetwork() {
-        try {
-          await ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: `0x${currentNetwork.chainId.toString(16)}` }],
-          })
-        } catch (error) {
-          console.error("Error switching network:", error)
-        }
-      }
+function displayTruncatedAddress(address) {
+  if (!address) return
+  const truncatedAddress = `${address.substring(0, 6)}...${address.substring(
+    address.length - 4
+  )}`
+  connectBtn.innerHTML = truncatedAddress
+}
 
-      window.addEventListener("load", async () => {
-        try {
-          const accounts = await ethereum.request({ method: "eth_accounts" })
-          if (accounts.length > 0) {
-            const address = accounts[0]
-            getShortAddr(address)
-            getENS(address)
-          }
-        } catch (error) {
-          console.log(error)
-        }
-      })
+async function displayENSName(address) {
+  try {
+    const mainnetProvider = new ethers.JsonRpcProvider(
+      networkConfigs.eth.rpcUrl
+    )
 
-      ethereum.on("accountsChanged", async function (accounts) {
-        if (accounts.length > 0) {
-          const address = accounts[0]
-          getShortAddr(address)
-          getENS(address)
-        }
-      })
+    const ensName = await mainnetProvider.lookupAddress(address)
+
+    if (ensName) {
+      connectBtn.innerHTML = ensName
+    }
+  } catch (error) {
+    console.log("Error getting ENS name:", error)
+  }
+}
+
+function toggleModalVisibility() {
+  const isVisible = modalBox.style.visibility === "visible"
+
+  modalBox.style.visibility = isVisible ? "hidden" : "visible"
+  overlay.style.visibility = isVisible ? "hidden" : "visible"
+  modal.style.visibility = isVisible ? "hidden" : "visible"
+}
+
+connectBtn.addEventListener("click", toggleModalVisibility)
+
+overlay.addEventListener("click", toggleModalVisibility)
+
+document.getElementById("network").addEventListener("click", () => {
+  const dropdownMenu = document.getElementById("dropdownMenu")
+  const isVisible = dropdownMenu.style.visibility === "visible"
+
+  if (isVisible) {
+    dropdownMenu.style.visibility = "hidden"
+  } else {
+    dropdownMenu.style.visibility = "visible"
+  }
+})
+
+async function switchNetwork(network) {
+  dropdownMenu.style.visibility = "hidden"
+  if (!currentProvider) {
+    console.error("No wallet provider selected.")
+    return
+  }
+
+  try {
+    await currentProvider.request({
+      method: "wallet_switchEthereumChain",
+      params: [{chainId: `0x${network.chainId.toString(16)}`}],
     })
+  } catch (error) {
+    console.error("Error switching network:", error)
+  }
+}
+
+document.getElementById("ethereum").addEventListener("click", () => {
+  switchNetwork(networkConfigs.eth)
+})
+
+document.getElementById("arbitrum").addEventListener("click", () => {
+  switchNetwork(networkConfigs.arb)
+})
+
+document.getElementById("optimism").addEventListener("click", () => {
+  switchNetwork(networkConfigs.op)
+})
+
+document.getElementById("base").addEventListener("click", () => {
+  switchNetwork(networkConfigs.base)
 })
