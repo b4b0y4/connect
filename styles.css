@@ -35,7 +35,6 @@ body {
   border-radius: 5px;
   padding: 5px;
   visibility: hidden;
-  transition: opacity 0.3s ease-in-out;
 }
 
 .dropdown-menu img {
