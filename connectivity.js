@@ -1,42 +1,5 @@
-import {ethers} from "./ethers.min.js"
-
-const networkConfigs = {
-  ethereum: {
-    name: "Ethereum",
-    rpcUrl: "https://eth.drpc.org",
-    chainId: 1,
-    icon: "./logo/eth.svg",
-  },
-  arbitrum: {
-    name: "Arbitrum",
-    rpcUrl: "https://1rpc.io/arb",
-    chainId: 42161,
-    icon: "./logo/arb.svg",
-  },
-  optimism: {
-    name: "Optimism",
-    rpcUrl: "https://mainnet.optimism.io",
-    chainId: 10,
-    icon: "./logo/op.svg",
-  },
-  base: {
-    name: "Base",
-    rpcUrl: "https://base-rpc.publicnode.com",
-    chainId: 8453,
-    icon: "./logo/base.svg",
-  },
-  sepolia: {
-    name: "Sepolia",
-    rpcUrl: "https://rpc.sepolia.org",
-    chainId: 11155111,
-    icon: "./logo/sepolia.svg",
-  },
-}
-
-const modalBox = document.getElementById("modalBox")
-const overlay = document.getElementById("overlay")
-const modal = document.getElementById("modal")
-const connectBtn = document.getElementById("connectBtn")
+import { ethers } from "./ethers.min.js"
+import { networkConfigs } from "./constants.js"
 
 const providers = []
 
@@ -51,7 +14,19 @@ function onPageLoad() {
     console.log(`Discovered provider: ${providerDetail.info.name}`)
     renderWallets()
 
+    // Reconnect to the provider if it was previously selected
+    const selectedUuid = localStorage.getItem("selectedWalletUuid")
+    if (selectedUuid && providerDetail.info.uuid === selectedUuid) {
+      selectWallet(selectedUuid)
+    }
+
+    providerDetail.provider.on("disconnect", () => {
+      console.log(`Disconnected from ${providerDetail.info.name}`)
+      disconnect()
+    })
+
     providerDetail.provider.on("chainChanged", (chainId) => {
+      console.log(`Chain changed to ${chainId} for ${providerDetail.info.name}`)
       updateNetworkButton(chainId)
     })
   })
@@ -59,15 +34,15 @@ function onPageLoad() {
   // Dispatch the request for providers
   window.dispatchEvent(new Event("eip6963:requestProvider"))
 
-  // Check if there's a connected address in localStorage
-  const connectedAddress = localStorage.getItem("connectedAddress")
-  if (connectedAddress) {
-    displayTruncatedAddress(connectedAddress)
-    displayENSName(connectedAddress)
+  // Check connected address in localStorage
+  const connectedAddr = localStorage.getItem("connectedAddr")
+  if (connectedAddr) {
+    shortAddress(connectedAddr)
+    getEns(connectedAddr)
   }
 }
 
-// Function to select a specific wallet provider by UUID
+// Function to select a wallet provider by UUID
 async function selectWallet(uuid) {
   const selectedProvider = providers.find(
     (provider) => provider.info.uuid === uuid
@@ -81,13 +56,14 @@ async function selectWallet(uuid) {
       const accounts = await selectedProvider.provider.request({
         method: "eth_requestAccounts",
       })
-      window.ethereum = selectedProvider.provider // Set the selected provider as the active provider
+      window.ethereum = selectedProvider.provider // Set selected provider as the active provider
       const address = accounts[0]
-      toggleModalVisibility()
-      displayTruncatedAddress(address)
-      displayENSName(address)
+      toggleModal()
+      shortAddress(address)
+      getEns(address)
 
-      localStorage.setItem("connectedAddress", address)
+      localStorage.setItem("connectedAddr", address)
+      localStorage.setItem("selectedWalletUuid", uuid)
 
       console.log(`Connected to ${selectedProvider.info.name}`)
     } catch (error) {
@@ -98,7 +74,7 @@ async function selectWallet(uuid) {
   }
 }
 
-// Function to render the list of discovered wallet providers
+// Function to render the list of wallet providers
 function renderWallets() {
   const walletContainer = document.getElementById("wallets")
   walletContainer.innerHTML = ""
@@ -133,59 +109,87 @@ if (
   window.addEventListener("DOMContentLoaded", onPageLoad)
 }
 
-function displayTruncatedAddress(address) {
-  if (!address) return
-  const truncatedAddress = `${address.substring(0, 6)}...${address.substring(
+function shortAddress(address) {
+  connectBtn.innerHTML = `${address.substring(0, 6)}...${address.substring(
     address.length - 4
   )}`
-  connectBtn.innerHTML = truncatedAddress
 }
 
-async function displayENSName(address) {
+async function getEns(address) {
   try {
     const mainnetProvider = new ethers.JsonRpcProvider(
       networkConfigs.ethereum.rpcUrl
     )
-
     const ensName = await mainnetProvider.lookupAddress(address)
 
-    if (ensName) {
-      connectBtn.innerHTML = ensName
-    }
+    if (ensName) connectBtn.innerHTML = ensName
   } catch (error) {
     console.log("Error getting ENS name:", error)
   }
 }
 
-function toggleModalVisibility() {
-  const isVisible = modalBox.style.visibility === "visible"
+function toggleModal() {
+  const connectedAddr = localStorage.getItem("connectedAddr")
+  const isVisible =
+    document.getElementById("modalBox").style.visibility === "visible"
 
-  modalBox.style.visibility = isVisible ? "hidden" : "visible"
-  overlay.style.visibility = isVisible ? "hidden" : "visible"
-  modal.style.visibility = isVisible ? "hidden" : "visible"
+  document.getElementById("modalBox").style.visibility = isVisible
+    ? "hidden"
+    : "visible"
+
+  document.getElementById("overlay").style.visibility = isVisible
+    ? "hidden"
+    : "visible"
+
+  document.getElementById("modal").style.visibility = isVisible
+    ? "hidden"
+    : "visible"
+
+  document.getElementById("wallets").style.display = connectedAddr
+    ? "none"
+    : "block"
+
+  document.getElementById("walletConnect").style.display = connectedAddr
+    ? "none"
+    : "flex"
+
+  document.getElementById("disconnectBtn").style.display = connectedAddr
+    ? "block"
+    : "none"
 }
 
-connectBtn.addEventListener("click", toggleModalVisibility)
+function disconnect() {
+  localStorage.removeItem("connectedAddr")
+  localStorage.removeItem("selectedWalletUuid")
+  connectBtn.innerHTML = "Connect Wallet"
+  document.getElementById("modalBox").style.visibility = "hidden"
+  document.getElementById("overlay").style.visibility = "hidden"
+  document.getElementById("modal").style.visibility = "hidden"
+}
 
-overlay.addEventListener("click", toggleModalVisibility)
+document.getElementById("connectBtn").addEventListener("click", toggleModal)
+
+document.getElementById("disconnectBtn").addEventListener("click", disconnect)
+
+document.getElementById("overlay").addEventListener("click", toggleModal)
 
 document.getElementById("network").addEventListener("click", () => {
-  const dropdownMenu = document.getElementById("dropdownMenu")
-  const isVisible = dropdownMenu.style.visibility === "visible"
+  const chainList = document.getElementById("chainList")
+  const isVisible = chainList.style.visibility === "visible"
 
   if (isVisible) {
-    dropdownMenu.style.visibility = "hidden"
+    chainList.style.visibility = "hidden"
   } else {
-    dropdownMenu.style.visibility = "visible"
+    chainList.style.visibility = "visible"
   }
 })
 
 async function switchNetwork(currentNetwork) {
-  dropdownMenu.style.visibility = "hidden"
+  chainList.style.visibility = "hidden"
   try {
     await ethereum.request({
       method: "wallet_switchEthereumChain",
-      params: [{chainId: `0x${currentNetwork.chainId.toString(16)}`}],
+      params: [{ chainId: `0x${currentNetwork.chainId.toString(16)}` }],
     })
   } catch (error) {
     console.error("Error switching network:", error)
@@ -204,7 +208,7 @@ function updateNetworkButton(chainId) {
     networkIcon.src = network.icon
     networkName.innerHTML = network.name
   } else {
-    networkIcon.src = ""
+    networkIcon.src = "./logo/eth.png"
     networkName.innerHTML = "Wrong Network"
   }
 }

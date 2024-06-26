@@ -27,7 +27,7 @@ body {
   margin-right: 5px;
 }
 
-.dropdown-menu {
+.chain-list {
   position: relative;
   margin-top: 5px;
   width: 120px;
@@ -37,7 +37,7 @@ body {
   visibility: hidden;
 }
 
-.dropdown-menu img {
+.chain-list img {
   width: 18px;
   height: 18px;
   margin-right: 5px;
