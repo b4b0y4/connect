@@ -2,47 +2,49 @@ import { ethers } from "./ethers.min.js"
 import { networkConfigs } from "./constants.js"
 
 const providers = []
+const connectBtn = document.getElementById("connectBtn")
 
-// Function to initialize the wallet discovery
-function onPageLoad() {
-  // Listener for provider announcements
-  window.addEventListener("eip6963:announceProvider", (event) => {
-    const providerDetail = event.detail
-    providers.push(providerDetail)
+window.addEventListener("eip6963:announceProvider", (event) => {
+  const providerDetail = event.detail
+  providers.push(providerDetail)
 
-    // Display the wallet provider in the UI
-    console.log(`Discovered provider: ${providerDetail.info.name}`)
-    renderWallets()
+  console.log(`Discovered provider: ${providerDetail.info.name}`)
+  renderWallets()
+})
 
-    // Reconnect to the provider if it was previously selected
-    const selectedUuid = localStorage.getItem("selectedWalletUuid")
-    if (selectedUuid && providerDetail.info.uuid === selectedUuid) {
-      selectWallet(selectedUuid)
+window.addEventListener("load", async () => {
+  const selectedProvider = providers.find((provider) => provider.info.uuid)
+  try {
+    const accounts = await selectedProvider.provider.request({
+      method: "eth_accounts",
+    })
+    if (accounts.length > 0) {
+      const address = accounts[0]
+      shortAddress(address)
+      getEns(address)
     }
+  } catch (error) {
+    console.log(error)
+  }
 
-    providerDetail.provider.on("disconnect", () => {
-      console.log(`Disconnected from ${providerDetail.info.name}`)
-      disconnect()
-    })
-
-    providerDetail.provider.on("chainChanged", (chainId) => {
-      console.log(`Chain changed to ${chainId} for ${providerDetail.info.name}`)
-      updateNetworkButton(chainId)
-    })
+  selectedProvider.provider.on("accountsChanged", async function (accounts) {
+    if (accounts.length > 0) {
+      const address = accounts[0]
+      shortAddress(address)
+      getEns(address)
+    } else {
+      connectBtn.innerHTML = "Connect"
+    }
   })
 
-  // Dispatch the request for providers
-  window.dispatchEvent(new Event("eip6963:requestProvider"))
+  selectedProvider.provider.on("chainChanged", (chainId) => {
+    console.log(`Chain changed to ${chainId} for ${selectedProvider.info.name}`)
+    updateNetworkButton(chainId)
+  })
+})
 
-  // Check connected address in localStorage
-  const connectedAddr = localStorage.getItem("connectedAddr")
-  if (connectedAddr) {
-    shortAddress(connectedAddr)
-    getEns(connectedAddr)
-  }
-}
+window.dispatchEvent(new Event("eip6963:requestProvider"))
 
-// Function to select a wallet provider by UUID
 async function selectWallet(uuid) {
   const selectedProvider = providers.find(
     (provider) => provider.info.uuid === uuid
@@ -52,18 +54,17 @@ async function selectWallet(uuid) {
     console.log(`Selected wallet: ${selectedProvider.info.name}`)
 
     try {
-      // Request account access if needed
-      const accounts = await selectedProvider.provider.request({
+      await selectedProvider.provider.request({
         method: "eth_requestAccounts",
       })
-      window.ethereum = selectedProvider.provider // Set selected provider as the active provider
+      const accounts = await selectedProvider.provider.request({
+        method: "eth_accounts",
+      })
+      window.ethereum = selectedProvider.provider
       const address = accounts[0]
       toggleModal()
       shortAddress(address)
       getEns(address)
-
-      localStorage.setItem("connectedAddr", address)
-      localStorage.setItem("selectedWalletUuid", uuid)
 
       console.log(`Connected to ${selectedProvider.info.name}`)
     } catch (error) {
@@ -74,7 +75,6 @@ async function selectWallet(uuid) {
   }
 }
 
-// Function to render the list of wallet providers
 function renderWallets() {
   const walletContainer = document.getElementById("wallets")
   walletContainer.innerHTML = ""
@@ -82,7 +82,6 @@ function renderWallets() {
   providers.forEach((provider) => {
     const button = document.createElement("button")
 
-    // Create an image element for the wallet icon
     const img = document.createElement("img")
     img.src = provider.info.icon
     img.alt = `${provider.info.name} icon`
@@ -90,23 +89,12 @@ function renderWallets() {
     img.style.height = "24px"
     img.style.marginRight = "8px"
 
-    // Add the icon and the name to the button
     button.appendChild(img)
     button.appendChild(document.createTextNode(provider.info.name))
 
     button.onclick = () => selectWallet(provider.info.uuid)
     walletContainer.appendChild(button)
   })
-}
-
-// Call the onPageLoad function when the page loads
-if (
-  document.readyState === "complete" ||
-  document.readyState === "interactive"
-) {
-  onPageLoad()
-} else {
-  window.addEventListener("DOMContentLoaded", onPageLoad)
 }
 
 function shortAddress(address) {
@@ -159,15 +147,13 @@ function toggleModal() {
 }
 
 function disconnect() {
-  localStorage.removeItem("connectedAddr")
-  localStorage.removeItem("selectedWalletUuid")
   connectBtn.innerHTML = "Connect Wallet"
   document.getElementById("modalBox").style.visibility = "hidden"
   document.getElementById("overlay").style.visibility = "hidden"
   document.getElementById("modal").style.visibility = "hidden"
 }
 
-document.getElementById("connectBtn").addEventListener("click", toggleModal)
+connectBtn.addEventListener("click", toggleModal)
 
 document.getElementById("disconnectBtn").addEventListener("click", disconnect)
 
@@ -184,12 +170,13 @@ document.getElementById("network").addEventListener("click", () => {
   }
 })
 
-async function switchNetwork(currentNetwork) {
+async function switchNetwork(newNetwork, uuid) {
+  const selectedProvider = providers.find((provider) => provider.info.uuid)
   chainList.style.visibility = "hidden"
   try {
-    await ethereum.request({
+    await selectedProvider.provider.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: `0x${currentNetwork.chainId.toString(16)}` }],
+      params: [{ chainId: `0x${newNetwork.chainId.toString(16)}` }],
     })
   } catch (error) {
     console.error("Error switching network:", error)
@@ -228,3 +215,137 @@ document.getElementById("optimism").addEventListener("click", () => {
 document.getElementById("base").addEventListener("click", () => {
   switchNetwork(networkConfigs.base)
 })
+
+document.getElementById("zksync").addEventListener("click", () => {
+  switchNetwork(networkConfigs.zksync)
+})
+
+document.getElementById("scroll").addEventListener("click", () => {
+  switchNetwork(networkConfigs.scroll)
+})
+
+document.getElementById("zkevm").addEventListener("click", () => {
+  switchNetwork(networkConfigs.zkevm)
+})
+
+// import { ethers } from "./ethers-5.6.esm.min.js"
+// import { networkConfigs } from "./constants.js"
+
+// const connectBtn = document.getElementById("connectBtn")
+// const modal = document.getElementById("warningModal")
+// const modalButton = document.getElementById("modalButton")
+
+// connectBtn.onclick = initiateConnectAttempt
+// modalButton.onclick = switchNetwork
+
+// // Change as needed
+// const currentNetwork = networkConfigs.sepolia
+
+// let initialConnectAttempted = false
+
+// async function initiateConnectAttempt() {
+//   if (!initialConnectAttempted) {
+//     initialConnectAttempted = true
+//     try {
+//       await ethereum.request({ method: "eth_requestAccounts" })
+//       await checkNetwork()
+//       const accounts = await ethereum.request({ method: "eth_accounts" })
+//       if (accounts.length > 0) {
+//         const address = accounts[0]
+//         displayTruncatedAddress(address)
+//         displayENSName(address)
+//         connectBtn.onclick = null
+//       } else {
+//         connectBtn.innerHTML = "Connect"
+//       }
+//     } catch (error) {
+//       console.log(error)
+//     }
+//   } else {
+//     connectBtn.innerHTML = "Install a Wallet"
+//     setTimeout(() => {
+//       connectBtn.innerHTML = "Connect"
+//     }, 3000)
+//   }
+// }
+
+// async function checkNetwork() {
+//   const chainId = await ethereum.request({ method: "eth_chainId" })
+//   if (chainId !== `0x${currentNetwork.chainId.toString(16)}`) {
+//     showModal()
+//   } else {
+//     modal.style.display = "none"
+//   }
+// }
+
+// function displayTruncatedAddress(address) {
+//   if (!address) return
+//   const truncatedAddress = `${address.substring(0, 6)}...${address.substring(
+//     address.length - 4
+//   )}`
+//   connectBtn.innerHTML = truncatedAddress
+// }
+
+// async function displayENSName(account) {
+//   try {
+//     const mainnetProvider = new ethers.providers.JsonRpcProvider(
+//       networkConfigs.ethereum.rpcUrl
+//     )
+
+//     const ensName = await mainnetProvider.lookupAddress(account)
+
+//     if (ensName) {
+//       connectBtn.innerHTML = ensName
+//     }
+//   } catch (error) {
+//     console.log("Error getting ENS name:", error)
+//   }
+// }
+
+// function showModal() {
+//   modal.style.display = "block"
+// }
+
+// async function switchNetwork() {
+//   try {
+//     await ethereum.request({
+//       method: "wallet_switchEthereumChain",
+//       params: [{ chainId: `0x${currentNetwork.chainId.toString(16)}` }],
+//     })
+//   } catch (error) {
+//     console.error("Error switching network:", error)
+//   }
+// }
+
+// // Event listener for changes in wallet accounts
+// ethereum.on("accountsChanged", async function (accounts) {
+//   if (accounts.length > 0) {
+//     const address = accounts[0]
+//     displayTruncatedAddress(address)
+//     displayENSName(address)
+//   } else {
+//     connectBtn.innerHTML = "Connect"
+//   }
+// })
+// // Event listener for changes in wallet network
+// ethereum.on("chainChanged", async function (chainId) {
+//   if (chainId !== `0x${currentNetwork.chainId.toString(16)}`) {
+//     showModal()
+//   } else {
+//     modal.style.display = "none"
+//   }
+// })
+
+// // Event listener to connect on page load if already connected
+// window.addEventListener("load", async () => {
+//   try {
+//     const accounts = await ethereum.request({ method: "eth_accounts" })
+//     if (accounts.length > 0) {
+//       const address = accounts[0]
+//       displayTruncatedAddress(address)
+//       displayENSName(address)
+//     }
+//   } catch (error) {
+//     console.log(error)
+//   }
+// })

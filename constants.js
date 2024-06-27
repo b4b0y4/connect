@@ -23,6 +23,24 @@ export const networkConfigs = {
     chainId: 8453,
     icon: "./logo/base.png",
   },
+  zksync: {
+    name: "ZKsync",
+    rpcUrl: "https://mainnet.era.zksync.io",
+    chainId: 324,
+    icon: "./logo/zksync.png",
+  },
+  scroll: {
+    name: "Scroll",
+    rpcUrl: "https://rpc.scroll.io",
+    chainId: 534352,
+    icon: "./logo/scroll.png",
+  },
+  zkevm: {
+    name: "Polygon zkEvm",
+    rpcUrl: "https://zkevm-rpc.com",
+    chainId: 1101,
+    icon: "./logo/zkevm.png",
+  },
   sepolia: {
     name: "Sepolia",
     rpcUrl: "https://rpc.sepolia.org",
