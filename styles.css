@@ -17,6 +17,10 @@ body {
   cursor: pointer;
 }
 
+#connectedBtn {
+  display: none;
+}
+
 .connectivity button:hover {
   background-color: lightgray;
 }
@@ -94,6 +98,8 @@ body {
 }
 
 .modal img {
+  height: 24px;
+  width: 24px;
   margin-right: 8px;
   border-radius: 5px;
 }
