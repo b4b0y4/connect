@@ -4,6 +4,8 @@ import { networkConfigs } from "./constants.js"
 const providers = []
 const connectBtn = document.getElementById("connectBtn")
 const connectedBtn = document.getElementById("connectedBtn")
+const chainList = document.getElementById("chainList")
+const chevron = document.getElementById("networkBtn").querySelector("span")
 
 window.addEventListener("eip6963:announceProvider", (event) => {
   const providerDetail = event.detail
@@ -15,42 +17,8 @@ window.addEventListener("eip6963:announceProvider", (event) => {
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
 
-window.addEventListener("load", async () => {
-  const selectedProvider = providers.find((provider) => provider.info.uuid)
-  try {
-    const accounts = await selectedProvider.provider.request({
-      method: "eth_accounts",
-    })
-    if (accounts.length > 0) {
-      const address = accounts[0]
-      shortAddress(address)
-    } else {
-      disconnect()
-    }
-  } catch (error) {
-    console.log(error)
-  }
-
-  selectedProvider.provider.on("accountsChanged", async function (accounts) {
-    if (accounts.length > 0) {
-      const address = accounts[0]
-      shortAddress(address)
-    } else {
-      connectBtn.innerHTML = "Connect Wallet"
-    }
-  })
-
-  selectedProvider.provider.on("chainChanged", (chainId) => {
-    console.log(`Chain changed to ${chainId} for ${selectedProvider.info.name}`)
-    updateNetworkButton(chainId)
-  })
-
-  selectedProvider.provider.on("disconnect", (error) => {
-    console.log(`Disconnected from ${selectedProvider.info.name}`)
-    console.error(error)
-    disconnect()
-  })
-})
+const selectedProvider = providers.find((provider) => provider.info.uuid)
+window.ethereum = selectedProvider.provider
 
 async function selectWallet(uuid) {
   const selectedProvider = providers.find(
@@ -154,15 +122,16 @@ connectBtn.addEventListener("click", toggleModal)
 document.getElementById("overlay").addEventListener("click", toggleModal)
 
 document.getElementById("networkBtn").addEventListener("click", () => {
-  const chainList = document.getElementById("chainList")
   const isVisible = chainList.style.visibility === "visible"
 
   chainList.style.visibility = isVisible ? "hidden" : "visible"
+
+  chevron.style.transform = isVisible ? "rotate(0deg)" : "rotate(180deg)"
 })
 
 async function switchNetwork(newNetwork) {
-  const selectedProvider = providers.find((provider) => provider.info.uuid)
   chainList.style.visibility = "hidden"
+  chevron.style.transform = "rotate(0deg)"
   try {
     await selectedProvider.provider.request({
       method: "wallet_switchEthereumChain",
@@ -177,15 +146,11 @@ function updateNetworkButton(chainId) {
   const network = Object.values(networkConfigs).find(
     (config) => config.chainId === parseInt(chainId, 16)
   )
-  const networkIcon = document.getElementById("network-icon")
-  const networkName = document.getElementById("network-name")
 
   if (network) {
-    networkIcon.src = network.icon
-    networkName.innerHTML = network.name
+    document.getElementById("network-icon").src = network.icon
   } else {
-    networkIcon.src = "./logo/wrong.png"
-    networkName.innerHTML = "Wrong Network"
+    document.getElementById("network-icon").src = "./logo/wrong.png"
   }
 }
 
@@ -201,4 +166,37 @@ function updateNetworkButton(chainId) {
   document.getElementById(el).addEventListener("click", () => {
     switchNetwork(networkConfigs[el])
   })
+})
+
+window.addEventListener("load", async () => {
+  const selectedProvider = providers.find((provider) => provider.info.uuid)
+  try {
+    const accounts = await selectedProvider.provider.request({
+      method: "eth_accounts",
+    })
+    if (accounts.length > 0) {
+      const address = accounts[0]
+      shortAddress(address)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+selectedProvider.provider.on("accountsChanged", async function (accounts) {
+  if (accounts.length > 0) {
+    const address = accounts[0]
+    shortAddress(address)
+  }
+})
+
+selectedProvider.provider.on("chainChanged", (chainId) => {
+  console.log(`Chain changed to ${chainId} for ${selectedProvider.info.name}`)
+  updateNetworkButton(chainId)
+})
+
+selectedProvider.provider.on("disconnect", (error) => {
+  console.log(`Disconnected from ${selectedProvider.info.name}`)
+  console.error(error)
+  disconnect()
 })

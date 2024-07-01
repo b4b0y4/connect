@@ -31,6 +31,10 @@ body {
   margin-right: 5px;
 }
 
+#networkBtn span {
+  transition: transform 0.2s ease-in-out;
+}
+
 .chain-list {
   position: relative;
   margin-top: 5px;
