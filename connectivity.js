@@ -6,6 +6,7 @@ const connectBtn = document.getElementById("connectBtn")
 const connectedBtn = document.getElementById("connectedBtn")
 const chainList = document.getElementById("chainList")
 const chevron = document.getElementById("networkBtn").querySelector("span")
+let selectedProvider = null
 
 window.addEventListener("eip6963:announceProvider", (event) => {
   const providerDetail = event.detail
@@ -17,13 +18,8 @@ window.addEventListener("eip6963:announceProvider", (event) => {
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
 
-const selectedProvider = providers.find((provider) => provider.info.uuid)
-window.ethereum = selectedProvider.provider
-
 async function selectWallet(uuid) {
-  const selectedProvider = providers.find(
-    (provider) => provider.info.uuid === uuid
-  )
+  selectedProvider = providers.find((provider) => provider.info.uuid === uuid)
 
   if (selectedProvider) {
     console.log(`Selected wallet: ${selectedProvider.info.name}`)
@@ -40,9 +36,13 @@ async function selectWallet(uuid) {
       toggleModal()
       shortAddress(address)
 
-      localStorage.setItem("walletId", selectedProvider.info.uuid)
+      setupProviderEventListeners(selectedProvider)
+
+      localStorage.setItem("lastUsedProviderUUID", selectedProvider.info.uuid)
 
       console.log(`Connected to ${selectedProvider.info.name}`)
+
+      switchNetwork(networkConfigs.ethereum)
     } catch (error) {
       console.error("User rejected the request:", error)
     }
@@ -65,6 +65,29 @@ function renderWallets() {
 
     button.onclick = () => selectWallet(provider.info.uuid)
     walletContainer.appendChild(button)
+  })
+}
+
+function setupProviderEventListeners(provider) {
+  provider.provider.on("accountsChanged", async function (accounts) {
+    if (accounts.length > 0) {
+      const address = accounts[0]
+      shortAddress(address)
+    } else {
+      disconnect()
+    }
+  })
+
+  provider.provider.on("chainChanged", (chainId) => {
+    console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
+    updateNetworkButton(chainId)
+    localStorage.setItem("currentChainId", chainId)
+  })
+
+  provider.provider.on("disconnect", (error) => {
+    console.log(`Disconnected from ${provider.info.name}`)
+    console.error(error)
+    disconnect()
   })
 }
 
@@ -111,27 +134,16 @@ function toggleModal() {
   )
 }
 
-function disconnect() {
-  connectBtn.style.display = "flex"
-  connectedBtn.style.display = "none"
-  connectBtn.innerHTML = "Connect Wallet"
-}
-
-connectBtn.addEventListener("click", toggleModal)
-
-document.getElementById("overlay").addEventListener("click", toggleModal)
-
-document.getElementById("networkBtn").addEventListener("click", () => {
-  const isVisible = chainList.style.visibility === "visible"
-
-  chainList.style.visibility = isVisible ? "hidden" : "visible"
-
-  chevron.style.transform = isVisible ? "rotate(0deg)" : "rotate(180deg)"
-})
-
 async function switchNetwork(newNetwork) {
   chainList.style.visibility = "hidden"
   chevron.style.transform = "rotate(0deg)"
+
+  if (!selectedProvider) {
+    console.log("No wallet selected. Prompting user to connect.")
+    toggleModal()
+    return
+  }
+
   try {
     await selectedProvider.provider.request({
       method: "wallet_switchEthereumChain",
@@ -152,6 +164,25 @@ function updateNetworkButton(chainId) {
     : "./logo/wrong.png"
 }
 
+function disconnect() {
+  connectBtn.style.display = "flex"
+  connectedBtn.style.display = "none"
+  connectBtn.innerHTML = "Connect Wallet"
+  selectedProvider = null
+  localStorage.removeItem("lastUsedProviderUUID")
+}
+
+connectBtn.addEventListener("click", toggleModal)
+
+document.getElementById("overlay").addEventListener("click", toggleModal)
+
+document.getElementById("networkBtn").addEventListener("click", () => {
+  const isVisible = chainList.style.visibility === "visible"
+
+  chainList.style.visibility = isVisible ? "hidden" : "visible"
+
+  chevron.style.transform = isVisible ? "rotate(0deg)" : "rotate(180deg)"
+})
 ;[
   "ethereum",
   "arbitrum",
@@ -162,42 +193,41 @@ function updateNetworkButton(chainId) {
   "zkevm",
 ].forEach((el) => {
   document.getElementById(el).addEventListener("click", () => {
-    switchNetwork(networkConfigs[el])
+    if (!selectedProvider) {
+      console.log("No wallet connected. Please connect a wallet first.")
+      toggleModal()
+    } else {
+      switchNetwork(networkConfigs[el])
+    }
   })
 })
+
+function checkInitialConnectionStatus() {
+  if (selectedProvider) {
+    selectedProvider.provider
+      .request({ method: "eth_accounts" })
+      .then((accounts) => {
+        if (accounts.length > 0) {
+          const address = accounts[0]
+          shortAddress(address)
+        }
+      })
+      .catch(console.error)
+  }
+}
 
 window.addEventListener("load", async () => {
   const storedChainId = localStorage.getItem("currentChainId")
   if (storedChainId) updateNetworkButton(storedChainId)
 
-  try {
-    const accounts = await selectedProvider.provider.request({
-      method: "eth_accounts",
-    })
-    if (accounts.length > 0) {
-      const address = accounts[0]
-      shortAddress(address)
+  const lastUsedProviderUUID = localStorage.getItem("lastUsedProviderUUID")
+  if (lastUsedProviderUUID) {
+    selectedProvider = providers.find(
+      (provider) => provider.info.uuid === lastUsedProviderUUID
+    )
+    if (selectedProvider) {
+      setupProviderEventListeners(selectedProvider)
+      checkInitialConnectionStatus()
     }
-  } catch (error) {
-    console.log(error)
   }
-})
-
-selectedProvider.provider.on("accountsChanged", async function (accounts) {
-  if (accounts.length > 0) {
-    const address = accounts[0]
-    shortAddress(address)
-  }
-})
-
-selectedProvider.provider.on("chainChanged", (chainId) => {
-  console.log(`Chain changed to ${chainId} for ${selectedProvider.info.name}`)
-  updateNetworkButton(chainId)
-  localStorage.setItem("currentChainId", chainId)
-})
-
-selectedProvider.provider.on("disconnect", (error) => {
-  console.log(`Disconnected from ${selectedProvider.info.name}`)
-  console.error(error)
-  disconnect()
 })
