@@ -147,11 +147,9 @@ function updateNetworkButton(chainId) {
     (config) => config.chainId === parseInt(chainId, 16)
   )
 
-  if (network) {
-    document.getElementById("network-icon").src = network.icon
-  } else {
-    document.getElementById("network-icon").src = "./logo/wrong.png"
-  }
+  document.getElementById("network-icon").src = network
+    ? network.icon
+    : "./logo/wrong.png"
 }
 
 ;[
@@ -169,7 +167,9 @@ function updateNetworkButton(chainId) {
 })
 
 window.addEventListener("load", async () => {
-  const selectedProvider = providers.find((provider) => provider.info.uuid)
+  const storedChainId = localStorage.getItem("currentChainId")
+  if (storedChainId) updateNetworkButton(storedChainId)
+
   try {
     const accounts = await selectedProvider.provider.request({
       method: "eth_accounts",
@@ -193,6 +193,7 @@ selectedProvider.provider.on("accountsChanged", async function (accounts) {
 selectedProvider.provider.on("chainChanged", (chainId) => {
   console.log(`Chain changed to ${chainId} for ${selectedProvider.info.name}`)
   updateNetworkButton(chainId)
+  localStorage.setItem("currentChainId", chainId)
 })
 
 selectedProvider.provider.on("disconnect", (error) => {
