@@ -110,7 +110,7 @@ function toggleModal() {
     : "flex"
 
   document.getElementById("disconnect").style.display = connected
-    ? "block"
+    ? "flex"
     : "none"
 }
 

@@ -1,5 +1,13 @@
+:root {
+  --color-bg: white;
+  --color-btn: black;
+  --color-hvr: lightgray;
+}
+
 body {
   font-family: Arial, sans-serif;
+  color: var(--color-txt);
+  background-color: var(--color-bg);
 }
 
 .connectivity {
@@ -10,15 +18,18 @@ body {
 .connectivity button {
   display: flex;
   align-items: center;
-  background-color: transparent;
-  padding: 5px;
-  margin-right: 10px;
-  border-radius: 5px;
+  color: var(--color-btn);
+  background-color: var(--color-bg);
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
+  border: none;
+  padding: 7.5px;
+  margin-right: 5px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 .connectivity button:hover {
-  background-color: lightgray;
+  background-color: var(--color-hvr);
 }
 
 .connectivity img {
@@ -27,16 +38,21 @@ body {
   margin-right: 5px;
 }
 
+#networkBtn {
+  box-shadow: none;
+  border: none;
+}
+
 #networkBtn span {
   transition: transform 0.2s ease-in-out;
 }
 
 .chain-list {
   position: relative;
-  margin-top: 5px;
+  margin-top: 10px;
   width: 120px;
   box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
+  border-radius: 10px;
   padding: 5px;
   visibility: hidden;
 }
@@ -51,16 +67,17 @@ body {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 5px;
+  padding: 7.5px;
+  color: var(--color-btn);
   background-color: transparent;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   text-align: left;
   transition: background-color 0.1s ease-in-out;
 }
 
 .chain-list button:hover {
-  background-color: lightgray;
+  background-color: var(--color-hvr);
 }
 
 .modal-box {
@@ -89,9 +106,9 @@ body {
   visibility: hidden;
   max-width: 200px;
   width: 100%;
-  background: #fff;
-  padding: 20px;
-  border-radius: 5px;
+  background-color: var(--color-bg);
+  padding: 10px;
+  border-radius: 20px;
   box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
   z-index: 1001;
 }
@@ -107,13 +124,14 @@ body {
   display: flex;
   align-items: center;
   width: 100%;
-  background-color: transparent;
-  padding: 5px;
-  margin: 10px 0;
-  border-radius: 5px;
+  color: var(--color-btn);
+  background-color: var(--color-bg);
+  border: none;
+  padding: 7.5px;
+  border-radius: 15px;
   cursor: pointer;
 }
 
 .modal button:hover {
-  background-color: lightgray;
+  background-color: var(--color-hvr);
 }
