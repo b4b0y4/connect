@@ -7,38 +7,33 @@ const chevron = document.getElementById("networkBtn").querySelector("span")
 
 const providers = []
 
-async function selectWallet(uuid) {
-  const selectedProvider = providers.find(
-    (provider) => provider.info.uuid === uuid
-  )
+async function selectWallet(name) {
+  const providerDetail = providers.find((p) => p.info.name === name)
+  if (!providerDetail) return
 
-  if (selectedProvider) {
-    console.log(`Selected wallet: ${selectedProvider.info.name}`)
+  try {
+    const accounts = await providerDetail.provider.request({
+      method: "eth_requestAccounts",
+    })
+    localStorage.setItem("lastWallet", providerDetail.info.name)
+    localStorage.setItem("connected", "true")
 
-    try {
-      await selectedProvider.provider.request({
-        method: "eth_requestAccounts",
-      })
-      const accounts = await selectedProvider.provider.request({
-        method: "eth_accounts",
-      })
-      window.ethereum = selectedProvider.provider
-      const address = accounts[0]
-      toggleModal()
-      shortAddress(address)
-      providerEvent(selectedProvider)
+    shortAddress(accounts[0])
+    providerEvent(providerDetail)
 
-      localStorage.setItem("lastUsedProviderUUID", selectedProvider.info.uuid)
-      localStorage.setItem("connected", true)
+    const chainId = await providerDetail.provider.request({
+      method: "eth_chainId",
+    })
+    updateNetworkButton(chainId)
+    localStorage.setItem("currentChainId", chainId)
 
-      switchNetwork(networkConfigs.ethereum)
+    switchNetwork(networkConfigs.ethereum)
 
-      console.log(`Connected to ${selectedProvider.info.name}`)
-    } catch (error) {
-      console.error("User rejected the request:", error)
-    }
-  } else {
-    console.error("Wallet not found")
+    console.log(
+      `Connected to ${providerDetail.info.name} with account: ${accounts[0]}`
+    )
+  } catch (error) {
+    console.error("Failed to connect:", error)
   }
 }
 
@@ -54,7 +49,10 @@ function renderWallets() {
     button.appendChild(img)
     button.appendChild(document.createTextNode(provider.info.name))
 
-    button.onclick = () => selectWallet(provider.info.uuid)
+    button.onclick = () => {
+      toggleModal()
+      selectWallet(provider.info.name)
+    }
     walletContainer.appendChild(button)
   })
 }
@@ -118,9 +116,8 @@ async function switchNetwork(newNetwork) {
   chainList.style.visibility = "hidden"
   chevron.style.transform = "rotate(0deg)"
 
-  const lastUsedProviderUUID = localStorage.getItem("lastUsedProviderUUID")
   const selectedProvider = providers.find(
-    (provider) => provider.info.uuid === lastUsedProviderUUID
+    (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
 
   try {
@@ -138,15 +135,16 @@ function updateNetworkButton(chainId) {
     (config) => config.chainId === parseInt(chainId, 16)
   )
 
-  document.getElementById("network-icon").src = network
+  document.getElementById("networkIcon").src = network
     ? network.icon
     : "./logo/wrong.png"
 }
 
 function disconnect() {
   connectBtn.innerHTML = "Connect Wallet"
-  localStorage.removeItem("lastUsedProviderUUID")
+  localStorage.removeItem("lastWallet")
   localStorage.removeItem("connected")
+  localStorage.removeItem("currentChainId")
 }
 
 function providerEvent(provider) {
@@ -177,6 +175,10 @@ window.addEventListener("eip6963:announceProvider", (event) => {
 
   console.log(`Discovered provider: ${providerDetail.info.name}`)
   renderWallets()
+
+  if (localStorage.getItem("connected") === "true") {
+    selectWallet(localStorage.getItem("lastWallet"))
+  }
 })
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
@@ -185,16 +187,10 @@ window.addEventListener("load", async () => {
   const storedChainId = localStorage.getItem("currentChainId")
   if (storedChainId) updateNetworkButton(storedChainId)
 
-  const lastUsedProviderUUID = localStorage.getItem("lastUsedProviderUUID")
-  if (lastUsedProviderUUID) {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.uuid === lastUsedProviderUUID
-    )
-    if (selectedProvider) {
-      providerEvent(selectedProvider)
-      selectWallet(lastUsedProviderUUID)
-    }
-  }
+  const selectedProvider = providers.find(
+    (provider) => provider.info.name === localStorage.getItem("lastWallet")
+  )
+  if (selectedProvider) providerEvent(selectedProvider)
 })
 
 connectBtn.addEventListener("click", toggleModal)
