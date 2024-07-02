@@ -156,10 +156,8 @@ function updateNetworkButton(chainId) {
 
 function disconnect() {
   connectBtn.innerHTML = "Connect Wallet"
-  selectedProvider = null
   localStorage.removeItem("lastUsedProviderUUID")
   localStorage.removeItem("connected")
-  toggleModal()
 }
 
 function setupProviderEventListeners(provider) {
@@ -211,7 +209,10 @@ connectBtn.addEventListener("click", toggleModal)
 
 document.getElementById("overlay").addEventListener("click", toggleModal)
 
-document.getElementById("disconnect").addEventListener("click", disconnect)
+document.getElementById("disconnect").addEventListener("click", () => {
+  toggleModal()
+  disconnect()
+})
 
 document.getElementById("networkBtn").addEventListener("click", () => {
   const isVisible = chainList.style.visibility === "visible"
