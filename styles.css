@@ -17,10 +17,6 @@ body {
   cursor: pointer;
 }
 
-#connectedBtn {
-  display: none;
-}
-
 .connectivity button:hover {
   background-color: lightgray;
 }

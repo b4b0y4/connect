@@ -1,11 +1,11 @@
 import { ethers } from "./ethers.min.js"
 import { networkConfigs } from "./constants.js"
 
-const providers = []
 const connectBtn = document.getElementById("connectBtn")
-const connectedBtn = document.getElementById("connectedBtn")
 const chainList = document.getElementById("chainList")
 const chevron = document.getElementById("networkBtn").querySelector("span")
+
+const providers = []
 let selectedProvider = null
 
 window.addEventListener("eip6963:announceProvider", (event) => {
@@ -39,6 +39,7 @@ async function selectWallet(uuid) {
       setupProviderEventListeners(selectedProvider)
 
       localStorage.setItem("lastUsedProviderUUID", selectedProvider.info.uuid)
+      localStorage.setItem("connected", true)
 
       console.log(`Connected to ${selectedProvider.info.name}`)
 
@@ -68,33 +69,8 @@ function renderWallets() {
   })
 }
 
-function setupProviderEventListeners(provider) {
-  provider.provider.on("accountsChanged", async function (accounts) {
-    if (accounts.length > 0) {
-      const address = accounts[0]
-      shortAddress(address)
-    } else {
-      disconnect()
-    }
-  })
-
-  provider.provider.on("chainChanged", (chainId) => {
-    console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
-    updateNetworkButton(chainId)
-    localStorage.setItem("currentChainId", chainId)
-  })
-
-  provider.provider.on("disconnect", (error) => {
-    console.log(`Disconnected from ${provider.info.name}`)
-    console.error(error)
-    disconnect()
-  })
-}
-
 function shortAddress(address) {
-  connectBtn.style.display = "none"
-  connectedBtn.style.display = "flex"
-  connectedBtn.innerHTML = `${address.substring(0, 6)}...${address.substring(
+  connectBtn.innerHTML = `${address.substring(0, 6)}...${address.substring(
     address.length - 4
   )}`
   getEns(address)
@@ -109,15 +85,15 @@ async function getEns(address) {
     const ensAvatar = await mainnetProvider.getAvatar(ensName)
 
     if (ensName && ensAvatar) {
-      connectedBtn.innerHTML = ""
+      connectBtn.innerHTML = ""
       const img = document.createElement("img")
       img.src = ensAvatar
       img.style.borderRadius = "50%"
 
-      connectedBtn.appendChild(img)
-      connectedBtn.appendChild(document.createTextNode(ensName))
+      connectBtn.appendChild(img)
+      connectBtn.appendChild(document.createTextNode(ensName))
     } else if (ensName) {
-      connectedBtn.innerHTML = ensName
+      connectBtn.innerHTML = ensName
     }
   } catch (error) {
     console.log("Error getting ENS name:", error)
@@ -132,6 +108,20 @@ function toggleModal() {
   ;["modalBox", "overlay", "modal"].forEach(
     (el) => (document.getElementById(el).style.visibility = value)
   )
+
+  const connected = localStorage.getItem("connected")
+
+  document.getElementById("wallets").style.display = connected
+    ? "none"
+    : "block"
+
+  document.getElementById("walletConnect").style.display = connected
+    ? "none"
+    : "flex"
+
+  document.getElementById("disconnect").style.display = connected
+    ? "block"
+    : "none"
 }
 
 async function switchNetwork(newNetwork) {
@@ -165,16 +155,63 @@ function updateNetworkButton(chainId) {
 }
 
 function disconnect() {
-  connectBtn.style.display = "flex"
-  connectedBtn.style.display = "none"
   connectBtn.innerHTML = "Connect Wallet"
   selectedProvider = null
   localStorage.removeItem("lastUsedProviderUUID")
+  localStorage.removeItem("connected")
+  toggleModal()
 }
+
+function setupProviderEventListeners(provider) {
+  provider.provider.on("accountsChanged", async function (accounts) {
+    if (accounts.length > 0) {
+      const address = accounts[0]
+      shortAddress(address)
+    } else {
+      disconnect()
+    }
+  })
+
+  provider.provider.on("chainChanged", (chainId) => {
+    console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
+    updateNetworkButton(chainId)
+    localStorage.setItem("currentChainId", chainId)
+  })
+
+  provider.provider.on("disconnect", () => {
+    console.log(`Disconnected from ${provider.info.name}`)
+    disconnect()
+  })
+}
+
+window.addEventListener("load", async () => {
+  const storedChainId = localStorage.getItem("currentChainId")
+  if (storedChainId) updateNetworkButton(storedChainId)
+
+  const lastUsedProviderUUID = localStorage.getItem("lastUsedProviderUUID")
+  if (lastUsedProviderUUID) {
+    selectedProvider = providers.find(
+      (provider) => provider.info.uuid === lastUsedProviderUUID
+    )
+    if (selectedProvider) {
+      setupProviderEventListeners(selectedProvider)
+      selectedProvider.provider
+        .request({ method: "eth_accounts" })
+        .then((accounts) => {
+          if (accounts.length > 0) {
+            const address = accounts[0]
+            shortAddress(address)
+          }
+        })
+    }
+  }
+})
 
 connectBtn.addEventListener("click", toggleModal)
 
 document.getElementById("overlay").addEventListener("click", toggleModal)
+
+document.getElementById("disconnect").addEventListener("click", disconnect)
 
 document.getElementById("networkBtn").addEventListener("click", () => {
   const isVisible = chainList.style.visibility === "visible"
@@ -200,34 +237,4 @@ document.getElementById("networkBtn").addEventListener("click", () => {
       switchNetwork(networkConfigs[el])
     }
   })
-})
-
-function checkInitialConnectionStatus() {
-  if (selectedProvider) {
-    selectedProvider.provider
-      .request({ method: "eth_accounts" })
-      .then((accounts) => {
-        if (accounts.length > 0) {
-          const address = accounts[0]
-          shortAddress(address)
-        }
-      })
-      .catch(console.error)
-  }
-}
-
-window.addEventListener("load", async () => {
-  const storedChainId = localStorage.getItem("currentChainId")
-  if (storedChainId) updateNetworkButton(storedChainId)
-
-  const lastUsedProviderUUID = localStorage.getItem("lastUsedProviderUUID")
-  if (lastUsedProviderUUID) {
-    selectedProvider = providers.find(
-      (provider) => provider.info.uuid === lastUsedProviderUUID
-    )
-    if (selectedProvider) {
-      setupProviderEventListeners(selectedProvider)
-      checkInitialConnectionStatus()
-    }
-  }
 })
