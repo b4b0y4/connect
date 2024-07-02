@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-flash">
 
 <head>
     <meta charset="UTF-8">
@@ -12,29 +12,39 @@
 </head>
 
 <body>
-    <div class="connectivity">
-        <button id="networkBtn">
-            <img id="networkIcon" src="./logo/eth.png" alt="Network Icon">
-            <span><i class="fa-solid fa-chevron-down"></i></span>
-        </button>
-        <button id="connectBtn">Connect Wallet</button>
-    </div>
-    <div class="chain-list" id="chainList">
-        <button id="ethereum"><img src="./logo/eth.png">Ethereum</button>
-        <button id="arbitrum"><img src="./logo/arb.png">Arbitrum</button>
-        <button id="optimism"><img src="./logo/op.png">Optimism</button>
-        <button id="base"><img src="./logo/base.png">Base</button>
-        <button id="zksync"><img src="./logo/zksync.png">ZKsync</button>
-        <button id="scroll"><img src="./logo/scroll.png">Scroll</button>
-        <button id="zkevm"><img src="./logo/zkevm.png">zkEVM</button>
-    </div>
+    <div class="wrapper">
 
-    <div id="modalBox" class="modal-box">
-        <div id="overlay" class="modal-overlay"></div>
-        <div id="modal" class="modal">
-            <div id="wallets"></div>
-            <button id="walletConnect"><img src="./logo/walletConnect.svg">WalletConnect</button>
-            <button id="disconnect"><img src="./logo/disconnect.png">Disconnect Wallet</button>
+        <div class="network">
+
+            <button id="networkBtn">
+                <img id="networkIcon" src="./logo/eth.png" alt="Network Icon">
+                <span><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+
+            <div class="chain-list" id="chainList">
+                <button id="ethereum"><img src="./logo/eth.png">Ethereum</button>
+                <button id="arbitrum"><img src="./logo/arb.png">Arbitrum</button>
+                <button id="optimism"><img src="./logo/op.png">Optimism</button>
+                <button id="base"><img src="./logo/base.png">Base</button>
+                <button id="zksync"><img src="./logo/zksync.png">ZKsync</button>
+                <button id="scroll"><img src="./logo/scroll.png">Scroll</button>
+                <button id="zkevm"><img src="./logo/zkevm.png">zkEVM</button>
+            </div>
+        </div>
+
+        <div class="connectivity">
+
+            <button id="connectBtn">Connect Wallet</button>
+
+            <div id="modalBox" class="modal-box">
+                <div id="overlay" class="modal-overlay"></div>
+                <div id="modal" class="modal">
+                    <button id="theme"><i class="fa-solid fa-sun"></i><i class="fa-solid fa-moon"></i>Theme</button>
+                    <div id="wallets"></div>
+                    <button id="walletConnect"><img src="./logo/walletConnect.svg">WalletConnect</button>
+                    <button id="disconnect"><i class="fa-solid fa-power-off"></i>Disconnect</button>
+                </div>
+            </div>
         </div>
     </div>
 

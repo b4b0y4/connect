@@ -221,3 +221,31 @@ document.getElementById("networkBtn").addEventListener("click", () => {
     switchNetwork(networkConfigs[el])
   })
 })
+
+/***************************************************
+ *              DARK/LIGHT MODE TOGGLE
+ **************************************************/
+const root = document.documentElement
+
+function setDarkMode(isDarkMode) {
+  root.classList.toggle("dark-mode", isDarkMode)
+
+  document.querySelector(".fa-sun").style.display = isDarkMode
+    ? "block"
+    : "none"
+  document.querySelector(".fa-moon").style.display = isDarkMode
+    ? "none"
+    : "block"
+}
+
+function toggleDarkMode() {
+  const updateTheme = !root.classList.contains("dark-mode")
+  localStorage.setItem("darkMode", updateTheme)
+  setDarkMode(updateTheme)
+}
+
+document.getElementById("theme").addEventListener("click", toggleDarkMode)
+
+setDarkMode(JSON.parse(localStorage.getItem("darkMode")))
+
+root.classList.remove("no-flash")
