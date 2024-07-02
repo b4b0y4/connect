@@ -27,7 +27,7 @@ async function selectWallet(name) {
     updateNetworkButton(chainId)
     localStorage.setItem("currentChainId", chainId)
 
-    switchNetwork(networkConfigs.ethereum)
+    // switchNetwork(networkConfigs.ethereum)
 
     console.log(
       `Connected to ${providerDetail.info.name} with account: ${accounts[0]}`
@@ -150,8 +150,7 @@ function disconnect() {
 function providerEvent(provider) {
   provider.provider.on("accountsChanged", async function (accounts) {
     if (accounts.length > 0) {
-      const address = accounts[0]
-      shortAddress(address)
+      shortAddress(accounts[0])
     } else {
       disconnect()
     }
