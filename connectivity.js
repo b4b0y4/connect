@@ -6,20 +6,11 @@ const chainList = document.getElementById("chainList")
 const chevron = document.getElementById("networkBtn").querySelector("span")
 
 const providers = []
-let selectedProvider = null
-
-window.addEventListener("eip6963:announceProvider", (event) => {
-  const providerDetail = event.detail
-  providers.push(providerDetail)
-
-  console.log(`Discovered provider: ${providerDetail.info.name}`)
-  renderWallets()
-})
-
-window.dispatchEvent(new Event("eip6963:requestProvider"))
 
 async function selectWallet(uuid) {
-  selectedProvider = providers.find((provider) => provider.info.uuid === uuid)
+  const selectedProvider = providers.find(
+    (provider) => provider.info.uuid === uuid
+  )
 
   if (selectedProvider) {
     console.log(`Selected wallet: ${selectedProvider.info.name}`)
@@ -35,15 +26,14 @@ async function selectWallet(uuid) {
       const address = accounts[0]
       toggleModal()
       shortAddress(address)
-
-      setupProviderEventListeners(selectedProvider)
+      providerEvent(selectedProvider)
 
       localStorage.setItem("lastUsedProviderUUID", selectedProvider.info.uuid)
       localStorage.setItem("connected", true)
 
-      console.log(`Connected to ${selectedProvider.info.name}`)
-
       switchNetwork(networkConfigs.ethereum)
+
+      console.log(`Connected to ${selectedProvider.info.name}`)
     } catch (error) {
       console.error("User rejected the request:", error)
     }
@@ -128,11 +118,10 @@ async function switchNetwork(newNetwork) {
   chainList.style.visibility = "hidden"
   chevron.style.transform = "rotate(0deg)"
 
-  if (!selectedProvider) {
-    console.log("No wallet selected. Prompting user to connect.")
-    toggleModal()
-    return
-  }
+  const lastUsedProviderUUID = localStorage.getItem("lastUsedProviderUUID")
+  const selectedProvider = providers.find(
+    (provider) => provider.info.uuid === lastUsedProviderUUID
+  )
 
   try {
     await selectedProvider.provider.request({
@@ -160,7 +149,7 @@ function disconnect() {
   localStorage.removeItem("connected")
 }
 
-function setupProviderEventListeners(provider) {
+function providerEvent(provider) {
   provider.provider.on("accountsChanged", async function (accounts) {
     if (accounts.length > 0) {
       const address = accounts[0]
@@ -182,25 +171,28 @@ function setupProviderEventListeners(provider) {
   })
 }
 
+window.addEventListener("eip6963:announceProvider", (event) => {
+  const providerDetail = event.detail
+  providers.push(providerDetail)
+
+  console.log(`Discovered provider: ${providerDetail.info.name}`)
+  renderWallets()
+})
+
+window.dispatchEvent(new Event("eip6963:requestProvider"))
+
 window.addEventListener("load", async () => {
   const storedChainId = localStorage.getItem("currentChainId")
   if (storedChainId) updateNetworkButton(storedChainId)
 
   const lastUsedProviderUUID = localStorage.getItem("lastUsedProviderUUID")
   if (lastUsedProviderUUID) {
-    selectedProvider = providers.find(
+    const selectedProvider = providers.find(
       (provider) => provider.info.uuid === lastUsedProviderUUID
     )
     if (selectedProvider) {
-      setupProviderEventListeners(selectedProvider)
-      selectedProvider.provider
-        .request({ method: "eth_accounts" })
-        .then((accounts) => {
-          if (accounts.length > 0) {
-            const address = accounts[0]
-            shortAddress(address)
-          }
-        })
+      providerEvent(selectedProvider)
+      selectWallet(lastUsedProviderUUID)
     }
   }
 })
@@ -231,11 +223,6 @@ document.getElementById("networkBtn").addEventListener("click", () => {
   "zkevm",
 ].forEach((el) => {
   document.getElementById(el).addEventListener("click", () => {
-    if (!selectedProvider) {
-      console.log("No wallet connected. Please connect a wallet first.")
-      toggleModal()
-    } else {
-      switchNetwork(networkConfigs[el])
-    }
+    switchNetwork(networkConfigs[el])
   })
 })
