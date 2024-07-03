@@ -126,13 +126,21 @@ async function switchNetwork(newNetwork) {
 }
 
 function updateNetworkButton(chainId) {
+  const normalizedChainId = normalizeChainId(chainId)
   const network = Object.values(networkConfigs).find(
-    (config) => config.chainId === parseInt(chainId, 16)
+    (net) => net.chainId === normalizedChainId
   )
 
   document.getElementById("networkIcon").src = network
     ? network.icon
     : "./logo/wrong.png"
+}
+
+function normalizeChainId(chainId) {
+  if (typeof chainId === "string") {
+    return parseInt(chainId, 16)
+  }
+  return chainId
 }
 
 function disconnect() {
@@ -155,9 +163,12 @@ function providerEvent(provider) {
   })
 
   provider.provider.on("chainChanged", (chainId) => {
-    console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
-    updateNetworkButton(chainId)
-    localStorage.setItem("currentChainId", chainId)
+    const normalizedChainId = normalizeChainId(chainId)
+    console.log(
+      `Chain changed to ${normalizedChainId} for ${provider.info.name}`
+    )
+    updateNetworkButton(normalizedChainId)
+    localStorage.setItem("currentChainId", normalizedChainId.toString())
   })
 
   provider.provider.on("disconnect", () => {

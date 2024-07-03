@@ -1,13 +1,13 @@
 :root {
-  --bg: #ececef;
-  --btn: #808082;
-  --hvr: #e7e5e5;
+  --bg: #f1f1f2;
+  --btn: #5c5c5c;
+  --hvr: #e7e7e7;
 }
 
 :root.dark-mode {
-  --bg: #212122;
-  --btn: #7e7d7d;
-  --hvr: #2d2e2e;
+  --bg: #19191a;
+  --btn: #adadae;
+  --hvr: #1e1e1e;
 }
 
 .no-flash {
