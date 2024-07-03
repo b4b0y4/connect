@@ -2,10 +2,10 @@ import { ethers } from "./ethers.min.js"
 import { networkConfigs } from "./constants.js"
 
 const networkBtn = document.getElementById("networkBtn")
-const chainList = document.getElementById("chainList")
 const chevron = networkBtn.querySelector("span i")
+const chainList = document.getElementById("chainList")
 const connectBtn = document.getElementById("connectBtn")
-const modal = document.getElementById("modal")
+const walletList = document.getElementById("walletList")
 
 const providers = []
 
@@ -52,7 +52,7 @@ function renderWallets() {
     button.appendChild(document.createTextNode(provider.info.name))
 
     button.onclick = () => {
-      toggleModal()
+      togglewalletList()
       selectWallet(provider.info.name)
     }
     walletContainer.appendChild(button)
@@ -90,8 +90,8 @@ async function getEns(address) {
   }
 }
 
-function toggleModal() {
-  modal.classList.toggle("show")
+function togglewalletList() {
+  walletList.classList.toggle("show")
   chainList.classList.remove("show")
   chevron.classList.remove("rotate")
 
@@ -140,6 +140,9 @@ function disconnect() {
   localStorage.removeItem("lastWallet")
   localStorage.removeItem("connected")
   localStorage.removeItem("currentChainId")
+  walletList.classList.remove("show")
+  chainList.classList.remove("show")
+  chevron.classList.remove("rotate")
 }
 
 function providerEvent(provider) {
@@ -190,18 +193,18 @@ window.addEventListener("load", async () => {
 networkBtn.addEventListener("click", (event) => {
   event.stopPropagation()
   chainList.classList.toggle("show")
-  modal.classList.remove("show")
   chevron.classList.toggle("rotate")
+  walletList.classList.remove("show")
 })
 
 connectBtn.addEventListener("click", (event) => {
   event.stopPropagation()
-  toggleModal()
+  togglewalletList()
 })
 
 document.addEventListener("click", () => {
   chainList.classList.remove("show")
-  modal.classList.remove("show")
+  walletList.classList.remove("show")
   chevron.classList.remove("rotate")
 })
 
@@ -209,14 +212,11 @@ chainList.addEventListener("click", (event) => {
   event.stopPropagation()
 })
 
-modal.addEventListener("click", (event) => {
+walletList.addEventListener("click", (event) => {
   event.stopPropagation()
 })
 
-document.getElementById("disconnect").addEventListener("click", () => {
-  toggleModal()
-  disconnect()
-})
+document.getElementById("disconnect").addEventListener("click", disconnect)
 ;[
   "ethereum",
   "arbitrum",
