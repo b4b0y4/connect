@@ -164,9 +164,9 @@ body {
   border-bottom-right-radius: 15px;
 }
 
-.fa-sun,
-.fa-moon,
-.fa-power-off {
+#theme span,
+#disconnect span {
+  width: 32px;
+  margin-right: 8px;
   font-size: 1.6em;
-  margin: 0 8px 0 4px;
 }
