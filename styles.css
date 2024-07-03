@@ -21,20 +21,21 @@ body {
 
 .wrapper {
   display: flex;
-  flex-direction: row;
+  justify-content: center;
   align-items: center;
 }
 
-.network {
-  display: flex;
-  flex-direction: column;
+.network,
+.connectivity {
+  position: relative;
 }
 
-.network button {
+.network button,
+.connectivity button {
   display: flex;
   align-items: center;
   color: var(--btn);
-  background-color: var(--bg);
+  background-color: transparent;
   box-shadow: none;
   border: none;
   height: 40px;
@@ -42,27 +43,65 @@ body {
   margin-right: 5px;
   border-radius: 10px;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.network button {
   transition: background-color 0.1s ease-in-out;
 }
 
-.network button span {
+.connectivity button {
+  font-size: 1em;
+  background-color: var(--hvr);
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
+  transition: filter 0.1s ease-in-out;
+}
+
+.chain-list,
+.modal {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 10px;
+  background-color: var(--bg);
+  box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
+  padding: 5px;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 100;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.chain-list {
+  width: 120px;
+  border-radius: 10px;
+}
+
+.modal {
+  width: 200px;
+  border-radius: 15px;
+}
+
+.chain-list.show,
+.modal.show {
+  visibility: visible;
+  opacity: 100;
+}
+
+.network button span i {
+  display: inline-block;
   transition: transform 0.2s ease-in-out;
+}
+
+.network button span i.rotate {
+  transform: rotate(180deg);
 }
 
 .network img {
   width: 24px;
   height: 24px;
   margin-right: 5px;
-}
-
-.chain-list {
-  position: absolute;
-  margin-top: 45px;
-  width: 120px;
-  box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  padding: 5px;
-  visibility: hidden;
 }
 
 .chain-list img {
@@ -80,26 +119,6 @@ body {
   background-color: var(--hvr);
 }
 
-.connectivity {
-  display: flex;
-  flex-direction: column;
-}
-
-.connectivity button {
-  display: flex;
-  align-items: center;
-  color: var(--btn);
-  background-color: var(--hvr);
-  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
-  border: none;
-  height: 40px;
-  padding: 7.5px;
-  margin-right: 5px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: filter 0.1s ease-in-out;
-}
-
 .connectivity button:hover {
   filter: brightness(90%);
 }
@@ -108,39 +127,6 @@ body {
   width: 24px;
   height: 24px;
   margin-right: 5px;
-}
-
-.modal-box {
-  visibility: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-overlay {
-  visibility: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.modal {
-  visibility: hidden;
-  max-width: 200px;
-  width: 100%;
-  background-color: var(--bg);
-  padding: 10px;
-  border-radius: 20px;
-  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.2);
-  z-index: 1001;
 }
 
 .modal img {
@@ -164,6 +150,7 @@ body {
   border-bottom-right-radius: 0;
   margin-bottom: 2.5px;
 }
+
 #wallets button {
   margin: 2.5px 0;
 }
@@ -180,6 +167,6 @@ body {
 .fa-sun,
 .fa-moon,
 .fa-power-off {
-  font-size: 1.8em;
+  font-size: 1.6em;
   margin: 0 8px 0 4px;
 }

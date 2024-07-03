@@ -1,9 +1,11 @@
 import { ethers } from "./ethers.min.js"
 import { networkConfigs } from "./constants.js"
 
-const connectBtn = document.getElementById("connectBtn")
+const networkBtn = document.getElementById("networkBtn")
 const chainList = document.getElementById("chainList")
-const chevron = document.getElementById("networkBtn").querySelector("span")
+const chevron = networkBtn.querySelector("span i")
+const connectBtn = document.getElementById("connectBtn")
+const modal = document.getElementById("modal")
 
 const providers = []
 
@@ -89,32 +91,25 @@ async function getEns(address) {
 }
 
 function toggleModal() {
-  const isVisible =
-    document.getElementById("modalBox").style.visibility === "visible"
-
-  const value = isVisible ? "hidden" : "visible"
-  ;["modalBox", "overlay", "modal"].forEach(
-    (el) => (document.getElementById(el).style.visibility = value)
-  )
+  modal.classList.toggle("show")
+  chainList.classList.remove("show")
+  chevron.classList.remove("rotate")
 
   const connected = localStorage.getItem("connected")
-
   document.getElementById("wallets").style.display = connected
     ? "none"
     : "block"
-
   document.getElementById("walletConnect").style.display = connected
     ? "none"
     : "flex"
-
   document.getElementById("disconnect").style.display = connected
     ? "flex"
     : "none"
 }
 
 async function switchNetwork(newNetwork) {
-  chainList.style.visibility = "hidden"
-  chevron.style.transform = "rotate(0deg)"
+  chainList.classList.remove("show")
+  chevron.classList.remove("rotate")
 
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
@@ -192,21 +187,35 @@ window.addEventListener("load", async () => {
   if (selectedProvider) providerEvent(selectedProvider)
 })
 
-connectBtn.addEventListener("click", toggleModal)
+networkBtn.addEventListener("click", (event) => {
+  event.stopPropagation()
+  chainList.classList.toggle("show")
+  modal.classList.remove("show")
+  chevron.classList.toggle("rotate")
+})
 
-document.getElementById("overlay").addEventListener("click", toggleModal)
+connectBtn.addEventListener("click", (event) => {
+  event.stopPropagation()
+  toggleModal()
+})
+
+document.addEventListener("click", () => {
+  chainList.classList.remove("show")
+  modal.classList.remove("show")
+  chevron.classList.remove("rotate")
+})
+
+chainList.addEventListener("click", (event) => {
+  event.stopPropagation()
+})
+
+modal.addEventListener("click", (event) => {
+  event.stopPropagation()
+})
 
 document.getElementById("disconnect").addEventListener("click", () => {
   toggleModal()
   disconnect()
-})
-
-document.getElementById("networkBtn").addEventListener("click", () => {
-  const isVisible = chainList.style.visibility === "visible"
-
-  chainList.style.visibility = isVisible ? "hidden" : "visible"
-
-  chevron.style.transform = isVisible ? "rotate(0deg)" : "rotate(180deg)"
 })
 ;[
   "ethereum",
