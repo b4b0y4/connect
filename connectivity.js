@@ -99,9 +99,7 @@ function togglewalletList() {
   document.getElementById("wallets").style.display = connected
     ? "none"
     : "block"
-  document.getElementById("walletConnect").style.display = connected
-    ? "none"
-    : "flex"
+  document.getElementById("whats").style.display = connected ? "none" : "flex"
   document.getElementById("disconnect").style.display = connected
     ? "flex"
     : "none"

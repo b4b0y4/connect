@@ -79,7 +79,7 @@ body {
 }
 
 .wallet-list {
-  width: 180px;
+  width: 200px;
   border-radius: 15px;
 }
 
@@ -155,7 +155,7 @@ body {
   margin: 2.5px 0;
 }
 
-#walletConnect,
+#whats,
 #disconnect {
   margin-top: 2.5px;
   border-top-left-radius: 0;
@@ -164,6 +164,11 @@ body {
   border-bottom-right-radius: 15px;
 }
 
+.wallet-list a {
+  text-decoration: none;
+}
+
+#whats span,
 #theme span,
 #disconnect span {
   width: 32px;
