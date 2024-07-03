@@ -173,9 +173,8 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   console.log(`Discovered provider: ${providerDetail.info.name}`)
   renderWallets()
 
-  if (localStorage.getItem("connected") === "true") {
+  if (localStorage.getItem("connected") === "true")
     selectWallet(localStorage.getItem("lastWallet"))
-  }
 })
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
