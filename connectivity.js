@@ -118,7 +118,7 @@ async function switchNetwork(newNetwork) {
   try {
     await selectedProvider.provider.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: `0x${newNetwork.chainId.toString(16)}` }],
+      params: [{ chainId: newNetwork.chainIdHex }],
     })
   } catch (error) {
     console.error("Error switching network:", error)
@@ -126,21 +126,13 @@ async function switchNetwork(newNetwork) {
 }
 
 function updateNetworkButton(chainId) {
-  const normalizedChainId = normalizeChainId(chainId)
   const network = Object.values(networkConfigs).find(
-    (net) => net.chainId === normalizedChainId
+    (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId
   )
 
   document.getElementById("networkIcon").src = network
     ? network.icon
     : "./logo/wrong.png"
-}
-
-function normalizeChainId(chainId) {
-  if (typeof chainId === "string") {
-    return parseInt(chainId, 16)
-  }
-  return chainId
 }
 
 function disconnect() {
@@ -163,12 +155,9 @@ function providerEvent(provider) {
   })
 
   provider.provider.on("chainChanged", (chainId) => {
-    const normalizedChainId = normalizeChainId(chainId)
-    console.log(
-      `Chain changed to ${normalizedChainId} for ${provider.info.name}`
-    )
-    updateNetworkButton(normalizedChainId)
-    localStorage.setItem("currentChainId", normalizedChainId.toString())
+    console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
+    updateNetworkButton(chainId)
+    localStorage.setItem("currentChainId", chainId)
   })
 
   provider.provider.on("disconnect", () => {
