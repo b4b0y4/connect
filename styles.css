@@ -34,11 +34,13 @@ body {
 .connectivity button {
   display: flex;
   align-items: center;
+  font-size: 1em;
+
   color: var(--btn);
   background-color: transparent;
   box-shadow: none;
   border: none;
-  height: 40px;
+  height: 35px;
   padding: 7.5px;
   margin-right: 5px;
   border-radius: 10px;
@@ -52,7 +54,6 @@ body {
 }
 
 .connectivity button {
-  font-size: 1em;
   background-color: var(--hvr);
   transition: filter 0.1s ease-in-out;
 }
@@ -61,7 +62,6 @@ body {
 .wallet-list {
   position: absolute;
   top: 100%;
-  left: 0;
   margin-top: 10px;
   background-color: var(--bg);
   box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
@@ -73,13 +73,15 @@ body {
 }
 
 .chain-list {
-  width: 120px;
+  width: 130px;
   border-radius: 10px;
+  left: 0;
 }
 
 .wallet-list {
   width: 200px;
   border-radius: 15px;
+  right: 0;
 }
 
 .chain-list.show,
