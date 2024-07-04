@@ -6,7 +6,7 @@
 }
 
 :root.dark-mode {
-  --bg: #19191a;
+  --bg: #212122;
   --btn: #adadae;
   --hvr: #1e1e1e;
   --main-btn: #4babe7;
@@ -67,7 +67,7 @@ body {
 
 .network button:hover,
 .connectivity button:hover {
-  filter: brightness(90%);
+  filter: brightness(80%);
 }
 
 .network img,
@@ -88,7 +88,9 @@ body {
   visibility: hidden;
   opacity: 0;
   z-index: 100;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transform: scale(0.8);
+  transform-origin: top;
 }
 
 .chain-list {
@@ -104,7 +106,8 @@ body {
 .chain-list.show,
 .wallet-list.show {
   visibility: visible;
-  opacity: 100;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .network button span i {
