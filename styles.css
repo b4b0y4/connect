@@ -68,7 +68,7 @@ body {
 
 .network button:hover,
 .connectivity button:hover {
-  filter: brightness(80%);
+  filter: brightness(90%);
 }
 
 .network img,
