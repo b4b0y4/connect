@@ -36,6 +36,8 @@ body {
 .network,
 .connectivity {
   position: relative;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .network button,
@@ -44,26 +46,35 @@ body {
   align-items: center;
   font-size: 1em;
   color: var(--btn);
-  background-color: transparent;
+  background-color: var(--bg);
   box-shadow: none;
   border: none;
   height: 35px;
-  padding: 7.5px;
-  border-radius: 25px;
+  padding: 10px;
+  border-radius: 15px;
   cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
+  transition: filter 0.1s ease-in-out;
 }
 
 .network button {
   margin-right: 5px;
-  transition: background-color 0.1s ease-in-out;
 }
 
 .connectivity button {
   color: var(--bg);
   background-color: var(--main-btn);
-  transition: filter 0.1s ease-in-out;
+}
+
+.network button:hover,
+.connectivity button:hover {
+  filter: brightness(90%);
+}
+
+.network img,
+.connectivity img {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
 }
 
 .chain-list,
@@ -71,9 +82,9 @@ body {
   position: absolute;
   top: 100%;
   margin-top: 10px;
-  background-color: var(--bg);
   box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
   padding: 5px;
+  border-radius: 15px;
   visibility: hidden;
   opacity: 0;
   z-index: 100;
@@ -82,13 +93,11 @@ body {
 
 .chain-list {
   width: 130px;
-  border-radius: 10px;
   left: 0;
 }
 
 .wallet-list {
   width: 200px;
-  border-radius: 15px;
   right: 0;
 }
 
@@ -107,12 +116,6 @@ body {
   transform: rotate(180deg);
 }
 
-.network img {
-  width: 24px;
-  height: 24px;
-  margin-right: 5px;
-}
-
 .chain-list img {
   width: 20px;
   height: 20px;
@@ -122,21 +125,7 @@ body {
 .chain-list button {
   width: 100%;
   height: fit-content;
-  border-radius: 10px;
-}
-
-.network button:hover {
-  background-color: var(--hvr);
-}
-
-.connectivity button:hover {
-  filter: brightness(90%);
-}
-
-.connectivity img {
-  width: 24px;
-  height: 24px;
-  margin-right: 5px;
+  padding: 7.5px;
 }
 
 .wallet-list img {
@@ -151,6 +140,7 @@ body {
   background-color: var(--hvr);
   width: 100%;
   height: 50px;
+  padding: 7.5px;
   border-radius: 0;
 }
 
