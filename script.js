@@ -33,6 +33,7 @@ async function selectWallet(name) {
     localStorage.setItem("currentChainId", chainId)
 
     // switchNetwork(networkConfigs.ethereum)
+
     connectBtn.style.color = "var(--btn)"
     connectBtn.style.background = "var(--bg)"
     console.log(
