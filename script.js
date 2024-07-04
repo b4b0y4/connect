@@ -33,7 +33,8 @@ async function selectWallet(name) {
     localStorage.setItem("currentChainId", chainId)
 
     // switchNetwork(networkConfigs.ethereum)
-
+    connectBtn.style.color = "var(--btn)"
+    connectBtn.style.background = "var(--bg)"
     console.log(
       `Connected to ${providerDetail.info.name} with account: ${accounts[0]}`
     )
@@ -145,6 +146,8 @@ function disconnect() {
   walletList.classList.remove("show")
   chainList.classList.remove("show")
   chevron.classList.remove("rotate")
+  connectBtn.style.color = "var(--bg)"
+  connectBtn.style.background = "var(--bg-btn)"
   document.getElementById("overlay").style.display = "none"
 }
 
@@ -174,7 +177,7 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   console.log(`Discovered provider: ${providerDetail.info.name}`)
   renderWallets()
 
-  if (localStorage.getItem("connected") === "true")
+  if (localStorage.getItem("connected"))
     selectWallet(localStorage.getItem("lastWallet"))
 })
 

@@ -1,15 +1,15 @@
 :root {
   --bg: #f1f1f2;
   --btn: #5c5c5c;
-  --hvr: #e7e7e7;
-  --main-btn: #4babe7;
+  --sec: #e7e7e7;
+  --bg-btn: #4babe7;
 }
 
 :root.dark-mode {
   --bg: #212122;
   --btn: #adadae;
-  --hvr: #1e1e1e;
-  --main-btn: #4babe7;
+  --sec: #1e1e1e;
+  --bg-btn: #4babe7;
 }
 
 .no-flash {
@@ -65,7 +65,7 @@ body {
 
 .connectivity button {
   color: var(--bg);
-  background-color: var(--main-btn);
+  background-color: var(--bg-btn);
 }
 
 .network button:hover,
@@ -115,6 +115,7 @@ body {
 
 .network button span i {
   display: inline-block;
+  font-size: 0.8em;
   transition: transform 0.2s ease-in-out;
 }
 
@@ -143,7 +144,7 @@ body {
 
 .wallet-list button {
   color: var(--btn);
-  background-color: var(--hvr);
+  background-color: var(--sec);
   width: 100%;
   height: 50px;
   padding: 7.5px;
