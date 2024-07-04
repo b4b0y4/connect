@@ -131,6 +131,7 @@ function updateNetworkButton(chainId) {
   document.getElementById("networkIcon").src = network
     ? network.icon
     : "./logo/wrong.png"
+  document.getElementById("overlay").style.display = network ? "none" : "block"
 }
 
 function disconnect() {

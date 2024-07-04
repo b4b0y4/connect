@@ -1,60 +1,48 @@
 <!DOCTYPE html>
 <html lang="en" class="no-flash">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Connect</title>
+	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+		integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-
 <body>
-    <div class="wrapper">
+	<div class="wrapper">
+		<div class="network">
+			<button id="networkBtn">
+				<img id="networkIcon" src="./logo/eth.png" alt="Network Icon">
+				<span><i class="fa-solid fa-chevron-down"></i></span>
+			</button>
+			<div class="chain-list" id="chainList">
+				<button id="ethereum"><img src="./logo/eth.png">Ethereum</button>
+				<button id="arbitrum"><img src="./logo/arb.png">Arbitrum</button>
+				<button id="optimism"><img src="./logo/op.png">Optimism</button>
+				<button id="base"><img src="./logo/base.png">Base</button>
+				<button id="zksync"><img src="./logo/zksync.png">ZKsync</button>
+				<button id="scroll"><img src="./logo/scroll.png">Scroll</button>
+				<button id="zkevm"><img src="./logo/zkevm.png">zkEVM</button>
+			</div>
+		</div>
+		<div class="connectivity">
+			<button id="connectBtn">Connect Wallet</button>
+			<div id="walletList" class="wallet-list">
+				<button id="theme"><span><i class="fa-solid fa-sun"></i><i class="fa-solid fa-moon"></i></span>Theme</button>
+				<div id="wallets"></div>
+				<!-- <button id="walletConnect"><img src="./logo/walletConnect.svg">WalletConnect</button> -->
+				<a href="https://ethereum.org/en/wallets/" target="_blank">
+					<button id="whats">
+						<span><i class="fa-solid fa-wallet"></i></span>What's a Wallet?
+					</button>
+				</a>
+				<button id="disconnect"><span><i class="fa-solid fa-power-off"></i></span>Disconnect</button>
+			</div>
+		</div>
+		<div id="overlay"></div>
+	</div>
 
-        <div class="network">
-
-            <button id="networkBtn">
-                <img id="networkIcon" src="./logo/eth.png" alt="Network Icon">
-                <span><i class="fa-solid fa-chevron-down"></i></span>
-            </button>
-
-            <div class="chain-list" id="chainList">
-                <button id="ethereum"><img src="./logo/eth.png">Ethereum</button>
-                <button id="arbitrum"><img src="./logo/arb.png">Arbitrum</button>
-                <button id="optimism"><img src="./logo/op.png">Optimism</button>
-                <button id="base"><img src="./logo/base.png">Base</button>
-                <button id="zksync"><img src="./logo/zksync.png">ZKsync</button>
-                <button id="scroll"><img src="./logo/scroll.png">Scroll</button>
-                <button id="zkevm"><img src="./logo/zkevm.png">zkEVM</button>
-            </div>
-
-        </div>
-
-        <div class="connectivity">
-
-            <button id="connectBtn">Connect Wallet</button>
-
-            <div id="walletList" class="wallet-list">
-                <button id="theme"><span><i class="fa-solid fa-sun"></i><i
-                            class="fa-solid fa-moon"></i></span>Theme</button>
-                <div id="wallets"></div>
-                <!-- <button id="walletConnect"><img src="./logo/walletConnect.svg">WalletConnect</button> -->
-                <a href="https://ethereum.org/en/wallets/" target="_blank">
-                    <button id="whats">
-                        <span><i class="fa-solid fa-wallet"></i></span>What's a Wallet?
-                    </button>
-                </a>
-                <button id="disconnect"><span><i class="fa-solid fa-power-off"></i></span>Disconnect</button>
-            </div>
-
-        </div>
-
-    </div>
-
-    <script src="./connectivity.js" type="module"></script>
+	<script src="./connectivity.js" type="module"></script>
 </body>
-
 </html>
