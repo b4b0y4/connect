@@ -240,11 +240,11 @@ function setDarkMode(isDarkMode) {
   root.classList.toggle("dark-mode", isDarkMode)
 
   document.querySelector(".fa-sun").style.display = isDarkMode
-    ? "none"
-    : "block"
-  document.querySelector(".fa-moon").style.display = isDarkMode
     ? "block"
     : "none"
+  document.querySelector(".fa-moon").style.display = isDarkMode
+    ? "none"
+    : "block"
 }
 
 function toggleDarkMode() {
