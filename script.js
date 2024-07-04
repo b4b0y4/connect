@@ -145,6 +145,7 @@ function disconnect() {
   walletList.classList.remove("show")
   chainList.classList.remove("show")
   chevron.classList.remove("rotate")
+  document.getElementById("overlay").style.display = "none"
 }
 
 function providerEvent(provider) {
