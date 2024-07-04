@@ -9,6 +9,9 @@ const walletList = document.getElementById("walletList")
 
 const providers = []
 
+/***************************************************
+ *                CONNECTIVITY
+ **************************************************/
 async function selectWallet(name) {
   const providerDetail = providers.find((p) => p.info.name === name)
   if (!providerDetail) return
@@ -152,13 +155,11 @@ function providerEvent(provider) {
       disconnect()
     }
   })
-
   provider.provider.on("chainChanged", (chainId) => {
     console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
     updateNetworkButton(chainId)
     localStorage.setItem("currentChainId", chainId)
   })
-
   provider.provider.on("disconnect", () => {
     console.log(`Disconnected from ${provider.info.name}`)
     disconnect()
