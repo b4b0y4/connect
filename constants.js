@@ -1,7 +1,7 @@
 export const networkConfigs = {
   ethereum: {
     name: "Ethereum",
-    rpcUrl: "https://eth.drpc.org",
+    rpcUrl: "https://ethereum-rpc.publicnode.com",
     chainId: 1,
     chainIdHex: "0x1",
     icon: "./logo/eth.png",
