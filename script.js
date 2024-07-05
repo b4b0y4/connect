@@ -13,20 +13,20 @@ const providers = []
  *                CONNECTIVITY
  **************************************************/
 async function selectWallet(name) {
-  const providerDetail = providers.find((p) => p.info.name === name)
-  if (!providerDetail) return
+  const selectedProvider = providers.find((p) => p.info.name === name)
+  if (!selectedProvider) return
 
   try {
-    const accounts = await providerDetail.provider.request({
+    const accounts = await selectedProvider.provider.request({
       method: "eth_requestAccounts",
     })
-    localStorage.setItem("lastWallet", providerDetail.info.name)
+    localStorage.setItem("lastWallet", selectedProvider.info.name)
     localStorage.setItem("connected", "true")
 
     shortAddress(accounts[0])
-    providerEvent(providerDetail)
+    providerEvent(selectedProvider)
 
-    const chainId = await providerDetail.provider.request({
+    const chainId = await selectedProvider.provider.request({
       method: "eth_chainId",
     })
     updateNetworkButton(chainId)
@@ -37,7 +37,7 @@ async function selectWallet(name) {
     connectBtn.style.color = "var(--btn)"
     connectBtn.style.background = "var(--bg)"
     console.log(
-      `Connected to ${providerDetail.info.name} with account: ${accounts[0]}`
+      `Connected to ${selectedProvider.info.name} with account: ${accounts[0]}`
     )
   } catch (error) {
     console.error("Failed to connect:", error)
@@ -65,7 +65,7 @@ function renderWallets() {
 }
 
 function shortAddress(address) {
-  connectBtn.innerHTML = `${address.substring(0, 6)}...${address.substring(
+  connectBtn.innerHTML = `${address.substring(0, 5)}...${address.substring(
     address.length - 4
   )}`
   getEns(address)
@@ -141,14 +141,14 @@ function updateNetworkButton(chainId) {
 
 function disconnect() {
   connectBtn.innerHTML = "Connect Wallet"
-  localStorage.removeItem("lastWallet")
-  localStorage.removeItem("connected")
-  localStorage.removeItem("currentChainId")
   walletList.classList.remove("show")
   chainList.classList.remove("show")
   chevron.classList.remove("rotate")
   connectBtn.style.color = "var(--bg)"
   connectBtn.style.background = "var(--bg-btn)"
+  localStorage.removeItem("connected")
+  localStorage.removeItem("currentChainId")
+  localStorage.removeItem("lastWallet")
   document.getElementById("overlay").style.display = "none"
 }
 
