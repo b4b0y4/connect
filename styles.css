@@ -3,6 +3,8 @@
   --btn: #5c5c5c;
   --sec: #e7e7e7;
   --bg-btn: #4babe7;
+  --bg-btn-start: #4babe7;
+  --bg-btn-end: #e47fe6;
 }
 
 :root.dark-mode {
@@ -10,6 +12,8 @@
   --btn: #adadae;
   --sec: #1e1e1e;
   --bg-btn: #4babe7;
+  --bg-btn-start: #4babe7;
+  --bg-btn-end: #57d47c;
 }
 
 .no-flash {
@@ -65,12 +69,26 @@ body {
 
 .connectivity button {
   color: var(--bg);
-  background-color: var(--bg-btn);
+  background: linear-gradient(270deg, var(--bg-btn-start), var(--bg-btn-end));
+  background-size: 400% 400%;
+  animation: gradientFlow 8s ease infinite;
 }
 
 .network button:hover,
 .connectivity button:hover {
   filter: brightness(90%);
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .network img,
@@ -145,6 +163,7 @@ body {
 #settings {
   color: var(--btn);
   background-color: var(--sec);
+  background-image: none;
   width: 100%;
   height: 50px;
   padding: 7.5px;
