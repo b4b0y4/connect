@@ -155,8 +155,8 @@ function disconnect() {
   walletList.classList.remove("show")
   chainList.classList.remove("show")
   chevron.classList.remove("rotate")
-  connectBtn.style.color = "var(--bg)"
-  connectBtn.style.background = "var(--bg-btn)"
+  connectBtn.style.color = ""
+  connectBtn.style.background = ""
   localStorage.removeItem("connected")
   localStorage.removeItem("currentChainId")
   localStorage.removeItem("lastWallet")
