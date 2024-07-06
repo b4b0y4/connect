@@ -213,17 +213,24 @@ body {
 }
 
 #disconnect {
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  height: 32px;
   border-radius: 32px;
-  padding: 6px;
+  padding: 7.5px;
   background-color: var(--sec);
-  filter: brightness(80%);
+  filter: brightness(90%);
   transition: filter 0.1s ease-in-out;
   cursor: pointer;
 }
 
 #disconnect:hover {
-  filter: brightness(90%);
+  filter: brightness(80%);
+}
+
+#disconnect i {
+  margin-right: 5px;
 }
 
 .theme {
