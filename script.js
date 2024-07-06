@@ -20,23 +20,24 @@ async function selectWallet(name) {
     const accounts = await selectedProvider.provider.request({
       method: "eth_requestAccounts",
     })
+
+    const chainId = await selectedProvider.provider.request({
+      method: "eth_chainId",
+    })
+
+    localStorage.setItem("currentChainId", chainId)
     localStorage.setItem("lastWallet", selectedProvider.info.name)
     localStorage.setItem("connected", "true")
 
     shortAddress(accounts[0])
     providerEvent(selectedProvider)
-
-    const chainId = await selectedProvider.provider.request({
-      method: "eth_chainId",
-    })
     updateNetworkButton(chainId)
-    localStorage.setItem("currentChainId", chainId)
-
+    updateSettings()
     // switchNetwork(networkConfigs.ethereum)
 
     connectBtn.style.color = "var(--btn)"
     connectBtn.style.background = "var(--bg)"
-    updateSettings()
+
     console.log(
       `Connected to ${selectedProvider.info.name} with account: ${accounts[0]}`
     )
@@ -155,11 +156,11 @@ function disconnect() {
   walletList.classList.remove("show")
   chainList.classList.remove("show")
   chevron.classList.remove("rotate")
-  connectBtn.style.color = ""
-  connectBtn.style.background = ""
   localStorage.removeItem("connected")
   localStorage.removeItem("currentChainId")
   localStorage.removeItem("lastWallet")
+  connectBtn.style.color = ""
+  connectBtn.style.background = ""
   document.getElementById("overlay").style.display = "none"
   updateSettings()
 }
