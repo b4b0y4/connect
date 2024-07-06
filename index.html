@@ -30,15 +30,25 @@
 		<div class="connectivity">
 			<button id="connectBtn">Connect Wallet</button>
 			<div id="walletList" class="wallet-list">
-				<button id="theme"><span><i class="fa-solid fa-sun"></i><i class="fa-solid fa-moon"></i></span>Theme</button>
+				<!-- <button id="theme"><span><i class="fa-solid fa-sun"></i><i class="fa-solid fa-moon"></i></span>Theme</button> -->
+				<div id="settings">
+					<label class="theme">
+						<input type="checkbox">
+						<span class="slider">
+							<i class="fa-solid fa-sun"></i>
+							<i class="fa-solid fa-moon"></i>
+						</span>
+					</label>
+					<div id="whats">
+						<a href="https://ethereum.org/en/wallets/" target="_blank">
+							What's a Wallet?</a>
+					</div>
+					<div id="disconnect"><i class="fa-solid fa-power-off"></i></div>
+				</div>
 				<div id="wallets"></div>
 				<!-- <button id="walletConnect"><img src="./logo/walletConnect.svg">WalletConnect</button> -->
-				<a href="https://ethereum.org/en/wallets/" target="_blank">
-					<button id="whats">
-						<span><i class="fa-solid fa-wallet"></i></span>What's a Wallet?
-					</button>
-				</a>
-				<button id="disconnect"><span><i class="fa-solid fa-power-off"></i></span>Disconnect</button>
+
+
 			</div>
 		</div>
 		<div id="overlay"></div>

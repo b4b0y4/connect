@@ -36,6 +36,7 @@ async function selectWallet(name) {
 
     connectBtn.style.color = "var(--btn)"
     connectBtn.style.background = "var(--bg)"
+    updateSettings()
     console.log(
       `Connected to ${selectedProvider.info.name} with account: ${accounts[0]}`
     )
@@ -139,6 +140,16 @@ function updateNetworkButton(chainId) {
   document.getElementById("overlay").style.display = network ? "none" : "block"
 }
 
+function updateSettings() {
+  const hasProvider = providers.length > 0
+
+  if (localStorage.getItem("connected") || !hasProvider) {
+    document.getElementById("settings").classList.add("connected")
+  } else {
+    document.getElementById("settings").classList.remove("connected")
+  }
+}
+
 function disconnect() {
   connectBtn.innerHTML = "Connect Wallet"
   walletList.classList.remove("show")
@@ -150,6 +161,7 @@ function disconnect() {
   localStorage.removeItem("currentChainId")
   localStorage.removeItem("lastWallet")
   document.getElementById("overlay").style.display = "none"
+  updateSettings()
 }
 
 function providerEvent(provider) {
@@ -177,7 +189,6 @@ window.addEventListener("eip6963:announceProvider", (event) => {
 
   console.log(`Discovered provider: ${providerDetail.info.name}`)
   renderWallets()
-
   if (localStorage.getItem("connected"))
     selectWallet(localStorage.getItem("lastWallet"))
 })
@@ -187,7 +198,7 @@ window.dispatchEvent(new Event("eip6963:requestProvider"))
 window.addEventListener("load", async () => {
   const storedChainId = localStorage.getItem("currentChainId")
   if (storedChainId) updateNetworkButton(storedChainId)
-
+  updateSettings()
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
@@ -239,26 +250,23 @@ document.getElementById("disconnect").addEventListener("click", disconnect)
  *              DARK/LIGHT MODE TOGGLE
  **************************************************/
 const root = document.documentElement
+const themeToggle = document.querySelector(".theme input")
+const themeLabel = document.querySelector(".theme")
 
 function setDarkMode(isDarkMode) {
   root.classList.toggle("dark-mode", isDarkMode)
-
-  document.querySelector(".fa-sun").style.display = isDarkMode
-    ? "block"
-    : "none"
-  document.querySelector(".fa-moon").style.display = isDarkMode
-    ? "none"
-    : "block"
+  themeToggle.checked = isDarkMode
+  themeLabel.classList.toggle("dark", isDarkMode)
+  localStorage.setItem("darkMode", JSON.stringify(isDarkMode))
 }
 
 function toggleDarkMode() {
-  const updateTheme = !root.classList.contains("dark-mode")
-  localStorage.setItem("darkMode", updateTheme)
-  setDarkMode(updateTheme)
+  const isDarkMode = themeToggle.checked
+  setDarkMode(isDarkMode)
 }
 
-document.getElementById("theme").addEventListener("click", toggleDarkMode)
+themeToggle.addEventListener("change", toggleDarkMode)
 
-setDarkMode(JSON.parse(localStorage.getItem("darkMode")))
-
+const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
+setDarkMode(savedDarkMode === true)
 root.classList.remove("no-flash")
