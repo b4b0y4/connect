@@ -205,13 +205,6 @@ body {
   margin-bottom: 0;
 }
 
-#whats a {
-  text-decoration: none;
-  color: var(--btn);
-  font-size: 14px;
-  transition: filter 0.1s ease-in-out;
-}
-
 #disconnect {
   display: flex;
   align-items: center;
@@ -225,8 +218,16 @@ body {
   cursor: pointer;
 }
 
+#whats a:hover,
 #disconnect:hover {
   filter: brightness(80%);
+}
+
+#whats a {
+  text-decoration: none;
+  color: var(--btn);
+  font-size: 14.5px;
+  transition: filter 0.1s ease-in-out;
 }
 
 #disconnect i {
