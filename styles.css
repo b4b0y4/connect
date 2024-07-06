@@ -177,29 +177,25 @@ body {
   margin-bottom: 0;
 }
 
-.wallet-list a {
+#whats a {
   text-decoration: none;
   color: var(--btn);
   font-size: 14px;
   transition: filter 0.1s ease-in-out;
 }
 
-.wallet-list a:hover {
-  filter: brightness(80%);
-}
-
 #disconnect {
   font-size: 16px;
   border-radius: 32px;
-  padding: 7px;
+  padding: 6px;
   background-color: var(--sec);
-  filter: brightness(90%);
+  filter: brightness(80%);
   transition: filter 0.1s ease-in-out;
   cursor: pointer;
 }
 
 #disconnect:hover {
-  filter: brightness(80%);
+  filter: brightness(90%);
 }
 
 .theme {
@@ -208,11 +204,13 @@ body {
   width: 60px;
   height: 32px;
 }
+
 .theme input {
   opacity: 0;
   width: 0;
   height: 0;
 }
+
 .slider {
   position: absolute;
   cursor: pointer;
@@ -225,6 +223,7 @@ body {
   transition: 0.4s;
   border-radius: 32px;
 }
+
 .slider:before {
   position: absolute;
   content: "";
@@ -237,9 +236,11 @@ body {
   transition: 0.4s;
   border-radius: 50%;
 }
+
 .theme.dark .slider:before {
   transform: translateX(28px);
 }
+
 .slider .fa-sun,
 .slider .fa-moon {
   position: absolute;
@@ -249,9 +250,11 @@ body {
   font-size: 16px;
   transition: 0.4s;
 }
+
 .slider .fa-sun {
   left: 8px;
 }
+
 .slider .fa-moon {
   right: 11px;
 }
