@@ -35,8 +35,8 @@ async function selectWallet(name) {
     updateSettings()
     // switchNetwork(networkConfigs.ethereum)
 
-    connectBtn.style.color = "var(--btn)"
-    connectBtn.style.background = "var(--bg)"
+    connectBtn.style.color = "var(--color-btn)"
+    connectBtn.style.background = "var(--color-bg)"
 
     console.log(
       `Connected to ${selectedProvider.info.name} with account: ${accounts[0]}`
