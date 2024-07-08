@@ -60,14 +60,14 @@ body {
   padding: 7.5px;
   border-radius: 15px;
   cursor: pointer;
-  transition: filter 0.1s ease-in-out;
+  transition: background 0.3s ease-in-out, filter 0.3s ease-in-out;
 }
 
 .network button {
   margin-right: 5px;
 }
 
-.connectivity button {
+#connectBtn {
   color: var(--color-bg);
   background: linear-gradient(
     270deg,
@@ -78,9 +78,24 @@ body {
   animation: gradientFlow 8s ease infinite;
 }
 
-.network button:hover,
-.connectivity button:hover {
-  filter: brightness(90%);
+#networkBtn:hover {
+  background-color: color-mix(in srgb, var(--color-bg) 90%, black);
+}
+
+#connectBtn:hover {
+  filter: brightness(0.9);
+}
+
+#connectBtn.connected {
+  color: var(--color-btn);
+  background: var(--color-bg);
+  background-size: initial;
+  animation: none;
+  filter: none;
+}
+
+#connectBtn.connected:hover {
+  background: color-mix(in srgb, var(--color-bg) 90%, black);
 }
 
 @keyframes gradientFlow {
@@ -95,11 +110,27 @@ body {
   }
 }
 
-.network img,
-.connectivity img {
-  width: 24px;
-  height: 24px;
+#connectBtn img {
+  width: 28px;
+  height: 28px;
   margin-right: 5px;
+  border: 2px solid var(--color-bg);
+}
+
+.network img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.network button span i {
+  display: inline-block;
+  font-size: 0.8em;
+  transition: transform 0.2s ease-in-out;
+}
+
+.network button span i.rotate {
+  transform: rotate(180deg);
 }
 
 .chain-list,
@@ -134,22 +165,6 @@ body {
   transform: scale(1);
 }
 
-.network button span i {
-  display: inline-block;
-  font-size: 0.8em;
-  transition: transform 0.2s ease-in-out;
-}
-
-.network button span i.rotate {
-  transform: rotate(180deg);
-}
-
-.chain-list img {
-  width: 22px;
-  height: 22px;
-  margin-right: 5px;
-}
-
 .wallet-list button,
 .chain-list button,
 #settings {
@@ -161,6 +176,11 @@ body {
   padding: 7.5px;
   border-radius: 0;
   margin: 2.5px 0;
+}
+
+.wallet-list button:hover,
+.chain-list button:hover {
+  background-color: color-mix(in srgb, var(--color-sec) 90%, black);
 }
 
 .chain-list button:first-child {
@@ -218,24 +238,27 @@ body {
   padding: 7.5px;
   background-color: var(--color-sec);
   filter: brightness(90%);
-  transition: filter 0.1s ease-in-out;
+  transition: background 0.3s ease-in-out;
   cursor: pointer;
 }
 
-#whats a:hover,
 #disconnect:hover {
-  filter: brightness(80%);
+  background: color-mix(in srgb, var(--color-sec) 90%, black);
+}
+
+#disconnect i {
+  margin-right: 5px;
 }
 
 #whats a {
   text-decoration: none;
   color: var(--color-btn);
-  font-size: 14.5px;
-  transition: filter 0.1s ease-in-out;
+  font-size: 14px;
+  transition: filter 0.3s ease-in-out;
 }
 
-#disconnect i {
-  margin-right: 5px;
+#whats a:hover {
+  filter: brightness(0.8);
 }
 
 .theme {
@@ -258,10 +281,14 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--color-sec);
+  background: var(--color-sec);
   filter: brightness(90%);
   transition: 0.4s;
   border-radius: 32px;
+}
+
+.slider:hover {
+  background: color-mix(in srgb, var(--color-sec) 90%, black);
 }
 
 .slider:before {

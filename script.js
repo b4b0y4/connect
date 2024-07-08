@@ -35,8 +35,7 @@ async function selectWallet(name) {
     updateSettings()
     // switchNetwork(networkConfigs.ethereum)
 
-    connectBtn.style.color = "var(--color-btn)"
-    connectBtn.style.background = "var(--color-bg)"
+    connectBtn.classList.add("connected")
 
     console.log(
       `Connected to ${selectedProvider.info.name} with account: ${accounts[0]}`
@@ -44,6 +43,13 @@ async function selectWallet(name) {
   } catch (error) {
     console.error("Failed to connect:", error)
   }
+}
+
+function setConnectedState() {
+  connectBtn.classList.remove("disconnected")
+  connectBtn.classList.add("connected")
+  connectBtn.style.color = "var(--color-btn)"
+  connectBtn.style.backgroundColor = "var(--color-bg)"
 }
 
 function renderWallets() {
@@ -159,8 +165,7 @@ function disconnect() {
   localStorage.removeItem("connected")
   localStorage.removeItem("currentChainId")
   localStorage.removeItem("lastWallet")
-  connectBtn.style.color = ""
-  connectBtn.style.background = ""
+  connectBtn.classList.remove("connected")
   document.getElementById("overlay").style.display = "none"
   updateSettings()
 }
