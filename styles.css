@@ -154,7 +154,7 @@ body {
 }
 
 .wallet-list {
-  width: 220px;
+  width: 200px;
   right: 0;
 }
 
@@ -229,40 +229,29 @@ body {
   margin-bottom: 0;
 }
 
-#whats,
 #disconnect {
-  display: flex;
-  align-items: center;
-  font-size: 13px;
+  font-size: 16px;
   height: 32px;
   width: fit-content;
   border-radius: 32px;
-  padding: 7.5px;
   background-color: var(--color-sec);
   filter: brightness(90%);
   cursor: pointer;
 }
 
-#disconnect {
-  font-size: 16px;
-}
-
-#whats:hover,
 #disconnect:hover {
-  background: color-mix(in srgb, var(--color-sec) 90%, black);
-}
-
-#disconnect i {
-  margin-right: 5px;
-}
-
-#whats i {
-  margin-left: 5px;
+  background: color-mix(in srgb, var(--color-sec) 80%, black);
 }
 
 #whats a {
+  font-size: 14px;
   text-decoration: none;
   color: var(--color-btn);
+  transition: filter 0.3s ease-in-out;
+}
+
+#whats a:hover {
+  filter: brightness(0.8);
 }
 
 .theme {
@@ -292,7 +281,7 @@ body {
 }
 
 .slider:hover {
-  background: color-mix(in srgb, var(--color-sec) 90%, black);
+  background: color-mix(in srgb, var(--color-sec) 80%, black);
 }
 
 .slider:before {
