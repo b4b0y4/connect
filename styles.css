@@ -234,9 +234,7 @@ body {
   height: 32px;
   width: fit-content;
   border-radius: 32px;
-  background-color: var(--color-sec);
   filter: brightness(90%);
-  cursor: pointer;
 }
 
 #disconnect:hover {
