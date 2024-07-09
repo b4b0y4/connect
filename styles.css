@@ -230,9 +230,10 @@ body {
 }
 
 #disconnect {
+  justify-content: center;
   font-size: 16px;
   height: 32px;
-  width: fit-content;
+  width: 60px;
   border-radius: 32px;
   filter: brightness(90%);
 }
