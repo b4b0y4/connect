@@ -154,7 +154,7 @@ body {
 }
 
 .wallet-list {
-  width: 200px;
+  width: 220px;
   right: 0;
 }
 
@@ -229,10 +229,11 @@ body {
   margin-bottom: 0;
 }
 
+#whats,
 #disconnect {
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 13px;
   height: 32px;
   width: fit-content;
   border-radius: 32px;
@@ -242,6 +243,11 @@ body {
   cursor: pointer;
 }
 
+#disconnect {
+  font-size: 16px;
+}
+
+#whats:hover,
 #disconnect:hover {
   background: color-mix(in srgb, var(--color-sec) 90%, black);
 }
@@ -250,15 +256,13 @@ body {
   margin-right: 5px;
 }
 
+#whats i {
+  margin-left: 5px;
+}
+
 #whats a {
   text-decoration: none;
   color: var(--color-btn);
-  font-size: 14px;
-  transition: filter 0.3s ease-in-out;
-}
-
-#whats a:hover {
-  filter: brightness(0.8);
 }
 
 .theme {
