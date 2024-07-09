@@ -45,13 +45,6 @@ async function selectWallet(name) {
   }
 }
 
-function setConnectedState() {
-  connectBtn.classList.remove("disconnected")
-  connectBtn.classList.add("connected")
-  connectBtn.style.color = "var(--color-btn)"
-  connectBtn.style.backgroundColor = "var(--color-bg)"
-}
-
 function renderWallets() {
   const walletContainer = document.getElementById("wallets")
   walletContainer.innerHTML = ""
