@@ -68,6 +68,7 @@ body {
 }
 
 #connectBtn {
+  font-size: 1.1em;
   color: var(--color-bg);
   background: linear-gradient(
     270deg,
