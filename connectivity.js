@@ -188,20 +188,47 @@ function updateNetworkButton(chainId) {
   renderChainList()
 }
 
-function disconnect() {
-  localStorage.removeItem("connected")
-  localStorage.removeItem("currentChainId")
-  localStorage.removeItem("lastWallet")
+async function disconnect() {
+  const selectedProvider = providers.find(
+    (provider) => provider.info.name === localStorage.getItem("lastWallet")
+  )
+
+  try {
+    await selectedProvider?.provider.request({
+      method: "wallet_revokePermissions",
+      params: [{ eth_accounts: {} }],
+    })
+  } catch (error) {
+    console.error("Error disconnecting:", error)
+  }
+
+  const itemsToRemove = [
+    "connected",
+    "currentChainId",
+    "lastWallet",
+    "-walletlink:https://www.walletlink.org:DefaultJsonRpcUrl",
+    "-walletlink:https://www.walletlink.org:session:secret",
+    "-walletlink:https://www.walletlink.org:Addresses",
+    "-walletlink:https://www.walletlink.org:IsStandaloneSigning",
+    "-walletlink:https://www.walletlink.org:session:linked",
+    "-walletlink:https://www.walletlink.org:session:id",
+    "-walletlink:https://www.walletlink.org:DefaultChainId",
+    "-walletlink:https://www.walletlink.org:EIP6963ProviderUUID",
+  ]
+  itemsToRemove.forEach((item) => localStorage.removeItem(item))
+
   connectBtn.innerHTML = "Connect Wallet"
-  walletList.classList.remove("show")
-  chainList.classList.remove("show")
-  chevron.classList.remove("rotate")
-  connectBtn.classList.remove("connected")
+  ;[(walletList, chainList, chevron, connectBtn)].forEach((el) => {
+    el.classList.remove("show", "rotate", "connected")
+  })
+
   toggleDisplay(overlay, false)
   toggleDisplay(walletBox, true)
   updateSettings()
   renderWallets()
   renderChainList()
+
+  location.reload()
 }
 
 function providerEvent(provider) {
