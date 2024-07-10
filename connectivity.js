@@ -8,7 +8,6 @@ const chainList = document.getElementById("chainList")
 const connectBtn = document.getElementById("connectBtn")
 const walletList = document.getElementById("walletList")
 const walletBox = document.getElementById("wallets")
-const settingsBox = document.getElementById("settings")
 const whatsBtn = document.getElementById("whats")
 const disconnectBtn = document.getElementById("disconnect")
 const overlay = document.getElementById("overlay")
@@ -133,7 +132,7 @@ function togglewalletList() {
 
 function updateSettings() {
   const hasProvider = providers.length > 0
-  settingsBox.classList.toggle("nowallet", !hasProvider)
+  document.getElementById("settings").classList.toggle("nowallet", !hasProvider)
 }
 
 function renderChainList() {
