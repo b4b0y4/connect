@@ -75,6 +75,12 @@ function renderWallets() {
   walletBox.innerHTML = ""
   const connectedWallet = localStorage.getItem("lastWallet")
 
+  providers.sort((a, b) => {
+    if (a.info.name === connectedWallet) return -1
+    if (b.info.name === connectedWallet) return 1
+    return 0
+  })
+
   providers.forEach((provider) => {
     const button = createButton(provider.info, () => {
       togglewalletList()
@@ -249,11 +255,12 @@ function toggleDarkMode() {
 window.addEventListener("eip6963:announceProvider", (event) => {
   const providerDetail = event.detail
   providers.push(providerDetail)
-
-  console.log(`Discovered provider: ${providerDetail.info.name}`)
   renderWallets()
+
   if (localStorage.getItem("connected"))
     selectWallet(localStorage.getItem("lastWallet"))
+
+  console.log(`Discovered provider: ${providerDetail.info.name}`)
 })
 
 window.addEventListener("load", async () => {
