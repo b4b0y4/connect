@@ -112,8 +112,8 @@ body {
 }
 
 #connectBtn img {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   margin-right: 5px;
   border: 2px solid var(--color-bg);
 }
