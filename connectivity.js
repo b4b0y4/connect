@@ -75,12 +75,6 @@ function renderWallets() {
   walletBox.innerHTML = ""
   const connectedWallet = localStorage.getItem("lastWallet")
 
-  providers.sort((a, b) => {
-    if (a.info.name === connectedWallet) return -1
-    if (b.info.name === connectedWallet) return 1
-    return 0
-  })
-
   providers.forEach((provider) => {
     const button = createButton(provider.info, () => {
       togglewalletList()
