@@ -31,8 +31,6 @@ body {
   background-color: var(--color-bg);
 }
 
-/* connectivity */
-
 .wrapper {
   display: flex;
   justify-content: center;
@@ -219,7 +217,7 @@ body {
   margin-top: 0;
 }
 
-#settings.connected {
+#settings.nowallet {
   border-radius: 15px;
   margin-bottom: 0;
 }
@@ -234,7 +232,7 @@ body {
   justify-content: center;
   font-size: 16px;
   height: 32px;
-  width: 60px;
+  width: 40px;
   border-radius: 32px;
   filter: brightness(90%);
 }
@@ -244,7 +242,7 @@ body {
 }
 
 #whats a {
-  font-size: 14px;
+  font-size: 14.5px;
   text-decoration: none;
   color: var(--color-btn);
   transition: filter 0.3s ease-in-out;
@@ -331,4 +329,12 @@ body {
   display: none;
 }
 
-/* connectivity */
+.indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #2ecc71;
+  margin-left: 5px;
+  vertical-align: middle;
+}

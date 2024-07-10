@@ -5,6 +5,7 @@ export const networkConfigs = {
     chainId: 1,
     chainIdHex: "0x1",
     icon: "./logo/eth.png",
+    showInUI: true,
   },
   arbitrum: {
     name: "Arbitrum",
@@ -12,6 +13,7 @@ export const networkConfigs = {
     chainId: 42161,
     chainIdHex: "0xa4b1",
     icon: "./logo/arb.png",
+    showInUI: true,
   },
   optimism: {
     name: "Optimism",
@@ -19,6 +21,7 @@ export const networkConfigs = {
     chainId: 10,
     chainIdHex: "0xa",
     icon: "./logo/op.png",
+    showInUI: true,
   },
   base: {
     name: "Base",
@@ -26,6 +29,7 @@ export const networkConfigs = {
     chainId: 8453,
     chainIdHex: "0x2105",
     icon: "./logo/base.png",
+    showInUI: true,
   },
   zksync: {
     name: "ZKsync",
@@ -33,6 +37,7 @@ export const networkConfigs = {
     chainId: 324,
     chainIdHex: "0x144",
     icon: "./logo/zksync.png",
+    showInUI: false,
   },
   scroll: {
     name: "Scroll",
@@ -40,13 +45,15 @@ export const networkConfigs = {
     chainId: 534352,
     chainIdHex: "0x82750",
     icon: "./logo/scroll.png",
+    showInUI: false,
   },
   zkevm: {
-    name: "Polygon zkEvm",
+    name: "zkEvm",
     rpcUrl: "https://zkevm-rpc.com",
     chainId: 1101,
     chainIdHex: "0x44d",
     icon: "./logo/zkevm.png",
+    showInUI: false,
   },
   sepolia: {
     name: "Sepolia",
@@ -54,5 +61,6 @@ export const networkConfigs = {
     chainId: 11155111,
     chainIdHex: "0xaa36a7",
     icon: "./logo/sepolia.png",
+    showInUI: false,
   },
 }
