@@ -194,7 +194,7 @@ async function disconnect() {
   )
 
   try {
-    await selectedProvider?.provider.request({
+    await selectedProvider.provider.request({
       method: "wallet_revokePermissions",
       params: [{ eth_accounts: {} }],
     })
@@ -202,7 +202,7 @@ async function disconnect() {
     console.error("Error disconnecting:", error)
   }
 
-  const itemsToRemove = [
+  ;[
     "connected",
     "currentChainId",
     "lastWallet",
@@ -214,8 +214,7 @@ async function disconnect() {
     "-walletlink:https://www.walletlink.org:session:id",
     "-walletlink:https://www.walletlink.org:DefaultChainId",
     "-walletlink:https://www.walletlink.org:EIP6963ProviderUUID",
-  ]
-  itemsToRemove.forEach((item) => localStorage.removeItem(item))
+  ].forEach((item) => localStorage.removeItem(item))
 
   connectBtn.innerHTML = "Connect Wallet"
   ;[(walletList, chainList, chevron, connectBtn)].forEach((el) => {

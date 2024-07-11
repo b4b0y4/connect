@@ -5,6 +5,7 @@
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #e47fe6;
+  --color-indic: #2ecc71;
 }
 
 :root.dark-mode {
@@ -14,6 +15,7 @@
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #57d47c;
+  --color-indic: #2ecc71;
 }
 
 .no-flash {
@@ -232,7 +234,7 @@ body {
   justify-content: center;
   font-size: 16px;
   height: 32px;
-  width: 40px;
+  width: 60px;
   border-radius: 32px;
   filter: brightness(90%);
 }
@@ -330,11 +332,9 @@ body {
 }
 
 .indicator {
-  display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: #2ecc71;
+  background-color: var(--color-indic);
   margin-left: 5px;
-  vertical-align: middle;
 }
