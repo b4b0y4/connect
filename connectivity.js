@@ -182,7 +182,7 @@ function updateNetworkButton(chainId) {
     networkIcon.src = network.icon
     toggleDisplay(overlay, false)
   } else {
-    networkIcon.src = "./logo/wrong.png"
+    networkIcon.src = "./logo/warning.svg"
     toggleDisplay(overlay, true)
   }
   renderChainList()
