@@ -244,7 +244,6 @@ body {
   font-size: 14.5px;
   text-decoration: none;
   color: var(--color-btn);
-  transition: filter 0.3s ease-in-out;
 }
 
 #whats a:hover {
@@ -273,7 +272,6 @@ body {
   bottom: 0;
   background: var(--color-sec);
   filter: brightness(90%);
-  transition: 0.4s;
   border-radius: 32px;
 }
 
