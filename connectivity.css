@@ -247,7 +247,7 @@ body {
 }
 
 #whats a:hover {
-  filter: brightness(0.9);
+  text-decoration: underline;
 }
 
 .theme {
