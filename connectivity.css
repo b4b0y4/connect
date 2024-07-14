@@ -60,7 +60,6 @@ body {
   padding: 7.5px;
   border-radius: 15px;
   cursor: pointer;
-  transition: background 0.3s ease-in-out, filter 0.3s ease-in-out;
 }
 
 .network button {
@@ -125,7 +124,7 @@ body {
 .network button span i {
   display: inline-block;
   font-size: 0.8em;
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.2s ease-in-out;
 }
 
 .network button span i.rotate {
@@ -142,7 +141,7 @@ body {
   padding: 5px;
   border-radius: 15px;
   opacity: 0;
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
   transform: scale(0.9);
   pointer-events: none;
 }
