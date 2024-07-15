@@ -244,7 +244,6 @@ function providerEvent(provider) {
     console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
     updateNetworkButton(chainId)
     renderChainList()
-    localStorage.setItem("currentChainId", chainId)
   })
   provider.provider.on("disconnect", () => {
     console.log(`Disconnected from ${provider.info.name}`)
