@@ -181,9 +181,11 @@ function updateNetworkButton(chainId) {
   if (network && network.showInUI) {
     networkIcon.src = network.icon
     toggleDisplay(overlay, false)
+    localStorage.setItem("currentChainId", chainId)
   } else {
     networkIcon.src = "./logo/warning.svg"
     toggleDisplay(overlay, true)
+    localStorage.removeItem("currentChainId")
   }
   renderChainList()
 }
