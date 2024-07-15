@@ -12,6 +12,7 @@ const whatsBtn = document.getElementById("whats")
 const disconnectBtn = document.getElementById("disconnect")
 const overlay = document.getElementById("overlay")
 const networkIcon = document.getElementById("networkIcon")
+const notification = document.getElementById("notification")
 
 const providers = []
 
@@ -36,9 +37,9 @@ const createButton = (config, onClick) => {
   return button
 }
 
-/***************************************************
- *                CONNECTIVITY
- **************************************************/
+/***********************************************************
+ *                     CONNECTIVITY
+ **********************************************************/
 async function selectWallet(name) {
   const selectedProvider = providers.find((p) => p.info.name === name)
   if (!selectedProvider) return
@@ -182,12 +183,24 @@ function updateNetworkButton(chainId) {
     networkIcon.src = network.icon
     toggleDisplay(overlay, false)
     localStorage.setItem("currentChainId", chainId)
+    showNotification("")
   } else {
     networkIcon.src = "./logo/warning.svg"
     toggleDisplay(overlay, true)
     localStorage.removeItem("currentChainId")
+    showNotification("Switch Network!", "warning")
   }
   renderChainList()
+}
+
+function showNotification(message, type = "info") {
+  if (message) {
+    notification.classList.add(type)
+    notification.textContent = message
+  } else {
+    notification.classList.remove("info", "warning")
+    notification.textContent = ""
+  }
 }
 
 async function disconnect() {
