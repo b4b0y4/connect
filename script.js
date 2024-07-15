@@ -195,11 +195,14 @@ function updateNetworkButton(chainId) {
 
 function showNotification(message, type = "info") {
   if (message) {
-    notification.classList.add(type)
     notification.textContent = message
+    notification.classList.add("show", type)
   } else {
-    notification.classList.remove("info", "warning")
-    notification.textContent = ""
+    notification.classList.remove("show")
+    setTimeout(() => {
+      notification.classList.remove("info", "warning")
+      notification.textContent = ""
+    }, 500)
   }
 }
 
