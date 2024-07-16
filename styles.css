@@ -97,7 +97,7 @@ body {
 
 #networkBtn:hover,
 #connectBtn.connected:hover {
-  background: var(--color-sec);
+  background: color-mix(in srgb, var(--color-sec) 90%, black);
 }
 
 @keyframes gradientFlow {
