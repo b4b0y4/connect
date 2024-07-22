@@ -65,7 +65,7 @@ body {
   padding: 7.5px;
   border-radius: 15px;
   cursor: pointer;
-  transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 .network button {
@@ -99,7 +99,6 @@ body {
 
 #networkBtn:hover,
 #connectBtn.connected:hover {
-  background-color: var(--color-sec);
   box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
@@ -181,6 +180,7 @@ body {
   padding: 7.5px;
   border-radius: 0;
   margin: 2.5px 0;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .wallet-list button:hover,
@@ -339,7 +339,7 @@ body {
 }
 
 #notification {
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   right: -100%;
   padding: 10px;
