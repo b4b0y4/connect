@@ -194,14 +194,15 @@ function updateNetworkButton(chainId) {
 }
 
 function showNotification(message, type = "info") {
+  const content = document.querySelector(".notif-content")
   if (message) {
-    notification.textContent = message
+    content.textContent = message
     notification.classList.add("show", type)
   } else {
     notification.classList.remove("show")
     setTimeout(() => {
       notification.classList.remove("info", "warning")
-      notification.textContent = ""
+      content.textContent = ""
     }, 500)
   }
 }
