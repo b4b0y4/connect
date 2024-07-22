@@ -1,6 +1,7 @@
 :root {
   --color-bg: #f1f1f2;
-  --color-btn: #5c5c5c;
+  --color-txt: #5c5c5c;
+  --color-btn: #b1b1b1;
   --color-sec: #e8e8e8;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
@@ -11,7 +12,8 @@
 
 :root.dark-mode {
   --color-bg: #212122;
-  --color-btn: #adadae;
+  --color-txt: #adadae;
+  --color-btn: #656565;
   --color-sec: #1e1e1e;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
@@ -55,7 +57,7 @@ body {
   display: flex;
   align-items: center;
   font-size: 1em;
-  color: var(--color-btn);
+  color: var(--color-txt);
   background-color: var(--color-bg);
   box-shadow: none;
   border: none;
@@ -63,7 +65,7 @@ body {
   padding: 7.5px;
   border-radius: 15px;
   cursor: pointer;
-  transition: background 0.3s ease-in-out, filter 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
 
 .network button {
@@ -80,14 +82,15 @@ body {
   );
   background-size: 400% 400%;
   animation: gradientFlow 8s ease infinite;
+  margin-left: 5px;
 }
 
 #connectBtn:hover {
-  filter: brightness(0.9);
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 #connectBtn.connected {
-  color: var(--color-btn);
+  color: var(--color-txt);
   background: transparent;
   background-size: initial;
   animation: none;
@@ -97,6 +100,7 @@ body {
 #networkBtn:hover,
 #connectBtn.connected:hover {
   background-color: var(--color-sec);
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 @keyframes gradientFlow {
@@ -140,7 +144,7 @@ body {
   background-color: var(--color-bg);
   top: 100%;
   margin-top: 10px;
-  box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 5px;
   border-radius: 15px;
   opacity: 0;
@@ -169,7 +173,7 @@ body {
 .wallet-list button,
 .chain-list button,
 #settings {
-  color: var(--color-btn);
+  color: var(--color-txt);
   background-color: var(--color-sec);
   background-image: none;
   width: 100%;
@@ -236,18 +240,19 @@ body {
   height: 32px;
   width: 60px;
   border-radius: 32px;
-  filter: brightness(90%);
-  transition: background 0.3s ease-in-out;
+  background-color: color-mix(in srgb, var(--color-sec) 90%, black);
+  transition: box-shadow 0.3s ease-in-out;
 }
 
+.slider:hover,
 #disconnect:hover {
-  background: color-mix(in srgb, var(--color-sec) 90%, black);
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 #whats a {
   font-size: 14.5px;
   text-decoration: none;
-  color: var(--color-btn);
+  color: var(--color-txt);
 }
 
 #whats a:hover {
@@ -274,14 +279,9 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--color-sec);
-  filter: brightness(90%);
-  border-radius: 32px;
-  transition: background 0.3s ease-in-out;
-}
-
-.slider:hover {
   background: color-mix(in srgb, var(--color-sec) 90%, black);
+  border-radius: 32px;
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 .slider:before {
@@ -292,7 +292,6 @@ body {
   left: 4px;
   bottom: 4px;
   background-color: var(--color-bg);
-  filter: brightness(150%);
   transition: 0.4s;
   border-radius: 50%;
 }
@@ -305,7 +304,7 @@ body {
 .slider .fa-moon {
   position: absolute;
   top: 50%;
-  color: var(--color-btn);
+  color: var(--color-txt);
   transform: translateY(-50%);
   font-size: 16px;
   transition: 0.4s;
