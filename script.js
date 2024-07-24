@@ -16,6 +16,9 @@ const notification = document.getElementById("notification")
 
 const providers = []
 
+/***********************************************************
+ *                     CONNECTIVITY
+ **********************************************************/
 // Helper functions
 const toggleDisplay = (element, show) => {
   element.style.display = show ? "block" : "none"
@@ -37,9 +40,6 @@ const createButton = (config, onClick) => {
   return button
 }
 
-/***********************************************************
- *                     CONNECTIVITY
- **********************************************************/
 async function selectWallet(name) {
   const selectedProvider = providers.find((p) => p.info.name === name)
   if (!selectedProvider) return
