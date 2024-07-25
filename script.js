@@ -175,6 +175,8 @@ async function switchNetwork(newNetwork) {
   }
 }
 
+let networkWarningShown = false
+
 function updateNetworkButton(chainId) {
   const network = Object.values(networkConfigs).find(
     (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId
@@ -184,27 +186,58 @@ function updateNetworkButton(chainId) {
     toggleDisplay(overlay, false)
     localStorage.setItem("currentChainId", chainId)
     showNotification("")
+    networkWarningShown = false
   } else {
     networkIcon.src = "./logo/warning.svg"
     toggleDisplay(overlay, true)
     localStorage.removeItem("currentChainId")
-    showNotification("Switch Network!", "warning")
+    if (!networkWarningShown) {
+      showNotification("Switch Network!", "warning", true)
+      networkWarningShown = true
+    }
   }
   renderChainList()
 }
 
-function showNotification(message, type = "info") {
-  const content = document.querySelector(".notif-content")
-  if (message) {
-    content.textContent = message
-    notification.classList.add("show", type)
-  } else {
-    notification.classList.remove("show")
-    setTimeout(() => {
-      notification.classList.remove("info", "warning")
-      content.textContent = ""
-    }, 500)
+function showNotification(message, type = "info", isPermanent = false) {
+  const notificationBox = document.getElementById("notificationBox")
+  const notifications = notificationBox.querySelectorAll("#notification")
+
+  if (!message) {
+    notifications.forEach((notification) => {
+      notification.classList.remove("show")
+      setTimeout(() => {
+        notificationBox.removeChild(notification)
+      }, 500)
+    })
+    return
   }
+
+  const notification = document.createElement("div")
+  notification.id = "notification"
+  notification.classList.add(type)
+
+  const content = document.createElement("div")
+  content.classList.add("notif-content")
+  content.textContent = message
+
+  notification.appendChild(content)
+  notificationBox.prepend(notification)
+
+  notification.offsetHeight
+
+  notification.classList.add("show")
+
+  if (!isPermanent) {
+    setTimeout(() => {
+      notification.classList.remove("show")
+      setTimeout(() => {
+        notificationBox.removeChild(notification)
+      }, 500)
+    }, 5000)
+  }
+
+  return notification
 }
 
 async function disconnect() {
