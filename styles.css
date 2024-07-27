@@ -350,21 +350,22 @@ body {
 
 #notificationBox {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 170px;
+  top: 50px;
+  right: 10px;
+  width: 190px;
   overflow: hidden;
   z-index: 100;
+  padding: 5px;
 }
 
 #notification {
   position: relative;
   right: -100%;
-  margin-top: 10px;
   border-radius: 15px;
   width: 100%;
   opacity: 0;
-  text-shadow: 1px 1px rgb(30, 30, 30);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
 }
 
@@ -374,7 +375,8 @@ body {
 }
 
 .notif-content {
-  position: relative;
+  display: flex;
+  justify-content: center;
   padding: 10px;
   border-radius: 15px;
 }
