@@ -279,6 +279,14 @@ function toggleDarkMode() {
   localStorage.setItem("darkMode", JSON.stringify(isDarkMode))
 }
 
+function getTheme() {
+  let savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
+  if (savedDarkMode === null) {
+    savedDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+  }
+  setDarkMode(savedDarkMode)
+}
+
 /***************************************************
  *              EVENT LISTENERS
  **************************************************/
@@ -303,14 +311,7 @@ window.addEventListener("load", async () => {
   if (selectedProvider) providerEvent(selectedProvider)
   renderChainList()
 
-  let savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
-  if (savedDarkMode === null) {
-    const prefersDarkScheme = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches
-    savedDarkMode = prefersDarkScheme
-  }
-  setDarkMode(savedDarkMode)
+  getTheme()
   root.classList.remove("no-flash")
 })
 
