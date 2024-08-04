@@ -271,12 +271,12 @@ function setDarkMode(isDarkMode) {
   root.classList.toggle("dark-mode", isDarkMode)
   themeToggle.checked = isDarkMode
   themeLabel.classList.toggle("dark", isDarkMode)
-  localStorage.setItem("darkMode", JSON.stringify(isDarkMode))
 }
 
 function toggleDarkMode() {
   const isDarkMode = themeToggle.checked
   setDarkMode(isDarkMode)
+  localStorage.setItem("darkMode", JSON.stringify(isDarkMode))
 }
 
 /***************************************************
@@ -303,10 +303,25 @@ window.addEventListener("load", async () => {
   if (selectedProvider) providerEvent(selectedProvider)
   renderChainList()
 
-  const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
-  setDarkMode(savedDarkMode === true)
+  let savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
+  if (savedDarkMode === null) {
+    const prefersDarkScheme = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches
+    savedDarkMode = prefersDarkScheme
+  }
+  setDarkMode(savedDarkMode)
   root.classList.remove("no-flash")
 })
+
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (event) => {
+    const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
+    if (savedDarkMode === null) {
+      setDarkMode(event.matches)
+    }
+  })
 
 networkBtn.addEventListener("click", (event) => {
   event.stopPropagation()
