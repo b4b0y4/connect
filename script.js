@@ -240,8 +240,6 @@ async function disconnect() {
   updateSettings()
   renderWallets()
   renderChainList()
-
-  location.reload()
 }
 
 function providerEvent(provider) {
