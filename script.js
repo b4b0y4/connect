@@ -2,44 +2,38 @@ import { ethers } from "./ethers.min.js"
 import { networkConfigs } from "./constants.js"
 
 // DOM Elements
-const networkBtn = document.getElementById("networkBtn")
+const networkBtn = document.querySelector("#networkBtn")
 const chevron = networkBtn.querySelector("span i")
-const chainList = document.getElementById("chainList")
-const connectBtn = document.getElementById("connectBtn")
-const walletList = document.getElementById("walletList")
-const walletBox = document.getElementById("wallets")
-const whatsBtn = document.getElementById("whats")
-const disconnectBtn = document.getElementById("disconnect")
-const overlay = document.getElementById("overlay")
-const networkIcon = document.getElementById("networkIcon")
-const notification = document.getElementById("notification")
+const chainList = document.querySelector("#chainList")
+const connectBtn = document.querySelector("#connectBtn")
+const walletList = document.querySelector("#walletList")
+const walletBox = document.querySelector("#wallets")
+const whatsBtn = document.querySelector("#whats")
+const disconnectBtn = document.querySelector("#disconnect")
+const overlay = document.querySelector("#overlay")
+const networkIcon = document.querySelector("#networkIcon")
 
 const providers = []
 
-/***********************************************************
- *                     CONNECTIVITY
- **********************************************************/
 // Helper functions
 const toggleDisplay = (element, show) => {
   element.style.display = show ? "block" : "none"
 }
 
-const createButton = (config, onClick) => {
+function createButton(config, onClick) {
   const button = document.createElement("button")
-  const img = document.createElement("img")
-  img.src = config.icon
-  button.appendChild(img)
-  button.appendChild(document.createTextNode(config.name))
-
-  const indicator = document.createElement("span")
-  indicator.className = "indicator"
-  indicator.style.display = "none"
-  button.appendChild(indicator)
-
+  button.innerHTML = `
+      <img src="${config.icon}">
+      ${config.name}
+      <span class="indicator" style="display: none"></span>
+    `
   button.onclick = onClick
   return button
 }
 
+/***********************************************************
+ *                     CONNECTIVITY
+ **********************************************************/
 async function selectWallet(name) {
   const selectedProvider = providers.find((p) => p.info.name === name)
   if (!selectedProvider) return
@@ -102,19 +96,13 @@ async function getEns(address) {
       networkConfigs.ethereum.rpcUrl
     )
     const ensName = await mainnetProvider.lookupAddress(address)
+    if (!ensName) return
+
     const ensAvatar = await mainnetProvider.getAvatar(ensName)
 
-    if (ensName && ensAvatar) {
-      connectBtn.innerHTML = ""
-      const img = document.createElement("img")
-      img.src = ensAvatar
-      img.style.borderRadius = "50%"
-
-      connectBtn.appendChild(img)
-      connectBtn.appendChild(document.createTextNode(ensName))
-    } else if (ensName) {
-      connectBtn.innerHTML = ensName
-    }
+    connectBtn.innerHTML = ensAvatar
+      ? `<img src="${ensAvatar}" style="border-radius: 50%">${ensName}`
+      : ensName
   } catch (error) {
     console.log("Error getting ENS name:", error)
   }
@@ -133,7 +121,7 @@ function togglewalletList() {
 
 function updateSettings() {
   const hasProvider = providers.length > 0
-  document.getElementById("settings").classList.toggle("nowallet", !hasProvider)
+  document.querySelector("#settings").classList.toggle("nowallet", !hasProvider)
 }
 
 function renderChainList() {
@@ -200,32 +188,22 @@ function updateNetworkButton(chainId) {
 }
 
 function showNotification(message, type = "info", isPermanent = false) {
-  const notificationBox = document.getElementById("notificationBox")
-  const notifications = notificationBox.querySelectorAll("#notification")
+  const notificationBox = document.querySelector("#notificationBox")
 
-  if (!message) {
-    notifications.forEach((notification) => {
-      notification.classList.remove("show")
-      setTimeout(() => {
-        notificationBox.removeChild(notification)
-      }, 500)
-    })
-    return
-  }
+  document.querySelectorAll("#notification").forEach((notification) => {
+    notification.classList.remove("show")
+    setTimeout(() => notificationBox.removeChild(notification), 500)
+  })
+
+  if (!message) return
 
   const notification = document.createElement("div")
   notification.id = "notification"
   notification.classList.add(type)
+  notification.innerHTML = `<div class="notif-content">${message}</div>`
 
-  const content = document.createElement("div")
-  content.classList.add("notif-content")
-  content.textContent = message
-
-  notification.appendChild(content)
   notificationBox.prepend(notification)
-
   notification.offsetHeight
-
   notification.classList.add("show")
 
   if (!isPermanent) {
@@ -241,12 +219,11 @@ function showNotification(message, type = "info", isPermanent = false) {
 }
 
 async function disconnect() {
-  const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet")
-  )
+  const lastWallet = localStorage.getItem("lastWallet")
+  const selectedProvider = providers.find((p) => p.info.name === lastWallet)
 
   try {
-    await selectedProvider.provider.request({
+    await selectedProvider?.provider.request({
       method: "wallet_revokePermissions",
       params: [{ eth_accounts: {} }],
     })
@@ -254,27 +231,12 @@ async function disconnect() {
     console.error("Error disconnecting:", error)
   }
 
-  ;[
-    "connected",
-    "currentChainId",
-    "lastWallet",
-    "-walletlink:https://www.walletlink.org:DefaultJsonRpcUrl",
-    "-walletlink:https://www.walletlink.org:session:secret",
-    "-walletlink:https://www.walletlink.org:Addresses",
-    "-walletlink:https://www.walletlink.org:IsStandaloneSigning",
-    "-walletlink:https://www.walletlink.org:session:linked",
-    "-walletlink:https://www.walletlink.org:session:id",
-    "-walletlink:https://www.walletlink.org:DefaultChainId",
-    "-walletlink:https://www.walletlink.org:EIP6963ProviderUUID",
-  ].forEach((item) => localStorage.removeItem(item))
-
+  localStorage.clear()
   connectBtn.innerHTML = "Connect Wallet"
   ;[(walletList, chainList, chevron, connectBtn)].forEach((el) => {
     el.classList.remove("show", "rotate", "connected")
   })
-
   toggleDisplay(overlay, false)
-  toggleDisplay(walletBox, true)
   updateSettings()
   renderWallets()
   renderChainList()
@@ -283,22 +245,19 @@ async function disconnect() {
 }
 
 function providerEvent(provider) {
-  provider.provider.on("accountsChanged", async function (accounts) {
-    if (accounts.length > 0) {
-      shortAddress(accounts[0])
-    } else {
+  provider.provider
+    .on("accountsChanged", (accounts) =>
+      accounts.length > 0 ? shortAddress(accounts[0]) : disconnect()
+    )
+    .on("chainChanged", (chainId) => {
+      console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
+      updateNetworkButton(chainId)
+      renderChainList()
+    })
+    .on("disconnect", () => {
+      console.log(`Disconnected from ${provider.info.name}`)
       disconnect()
-    }
-  })
-  provider.provider.on("chainChanged", (chainId) => {
-    console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
-    updateNetworkButton(chainId)
-    renderChainList()
-  })
-  provider.provider.on("disconnect", () => {
-    console.log(`Disconnected from ${provider.info.name}`)
-    disconnect()
-  })
+    })
 }
 
 /***************************************************

@@ -1,8 +1,8 @@
 :root {
   --color-bg: #f4f4f4;
   --color-txt: #5c5c5c;
-  --color-btn: #b1b1b1;
-  --color-sec: #e8e8e8;
+  --color-hvr: #d2d2d2;
+  --color-btn: #e8e8e8;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #e47fe6;
   --color-info: 75, 186, 231;
@@ -13,8 +13,8 @@
 :root.dark-mode {
   --color-bg: #201f1f;
   --color-txt: #adadae;
-  --color-btn: #656565;
-  --color-sec: #232323;
+  --color-hvr: #282828;
+  --color-btn: #232323;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #57d47c;
   --color-info: 75, 186, 231;
@@ -52,6 +52,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 200px;
 }
 
 .network,
@@ -96,20 +97,15 @@ body {
 }
 
 #connectBtn:hover {
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  box-shadow: 0 0 0 0.5px var(--color-hvr);
 }
 
 #connectBtn.connected {
   color: var(--color-txt);
-  background: transparent;
+  background: var(--color-hvr);
   background-size: initial;
   animation: none;
   filter: none;
-}
-
-#networkBtn:hover,
-#connectBtn.connected:hover {
-  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 @keyframes gradientFlow {
@@ -153,7 +149,7 @@ body {
   background-color: var(--color-bg);
   top: 100%;
   margin-top: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   padding: 5px;
   border-radius: 15px;
   opacity: 0;
@@ -183,7 +179,7 @@ body {
 .chain-list button,
 #settings {
   color: var(--color-txt);
-  background-color: var(--color-sec);
+  background-color: var(--color-btn);
   background-image: none;
   width: 100%;
   height: 40px;
@@ -195,7 +191,7 @@ body {
 
 .wallet-list button:hover,
 .chain-list button:hover {
-  background-color: color-mix(in srgb, var(--color-sec) 90%, black);
+  background-color: var(--color-hvr);
 }
 
 .chain-list button:first-child {
@@ -250,13 +246,13 @@ body {
   height: 32px;
   width: 60px;
   border-radius: 32px;
-  background-color: color-mix(in srgb, var(--color-sec) 90%, black);
+  background-color: var(--color-hvr);
   transition: box-shadow 0.3s ease-in-out;
 }
 
 .slider:hover,
 #disconnect:hover {
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  box-shadow: 0 0 0 1px var(--color-hvr);
 }
 
 #whats a {
@@ -289,7 +285,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: color-mix(in srgb, var(--color-sec) 90%, black);
+  background: var(--color-hvr);
   border-radius: 32px;
   transition: box-shadow 0.3s ease-in-out;
 }
@@ -329,11 +325,26 @@ body {
 }
 
 .indicator {
+  position: relative;
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background-color: rgb(var(--color-success));
   margin-left: 5px;
+  box-shadow: 0 0 0 0 rgba(var(--color-success), 0.5);
+  animation: pulse 1.5s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--color-success), 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 4px rgba(var(--color-success), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--color-success), 0);
+  }
 }
 
 #overlay {
@@ -342,19 +353,20 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  /* background: rgba(0, 0, 0, 0.5); */
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   z-index: 99;
   display: none;
 }
 
 #notificationBox {
   position: fixed;
-  top: 50px;
-  right: 10px;
-  width: 190px;
+  bottom: 20px;
+  right: 20px;
+  width: 200px;
   overflow: hidden;
-  z-index: 100;
+  z-index: 99;
   padding: 5px;
 }
 
@@ -389,7 +401,7 @@ body {
   right: 0;
   bottom: 0;
   border-radius: 15px;
-  background-color: rgba(23, 23, 23, 0.9);
+  background-color: rgba(var(--color-bg), 0.9);
   z-index: -1;
 }
 
@@ -397,19 +409,19 @@ body {
   color: rgba(var(--color-info), 0.8);
   border: 1px solid rgba(var(--color-info), 0.8);
   background-color: rgba(var(--color-info), 0.1);
-  box-shadow: 0 0 2px rgba(var(--color-info), 0.5);
+  box-shadow: 0 0 4px rgba(var(--color-info), 0.5);
 }
 
 #notification.success .notif-content {
   color: rgba(var(--color-success), 0.8);
   border: 1px solid rgba(var(--color-success), 0.8);
   background-color: rgba(var(--color-success), 0.1);
-  box-shadow: 0 0 2px rgba(var(--color-success), 0.5);
+  box-shadow: 0 0 4px rgba(var(--color-success), 0.5);
 }
 
 #notification.warning .notif-content {
   color: rgba(var(--color-warning), 0.8);
   border: 1px solid rgba(var(--color-warning), 0.8);
   background-color: rgba(var(--color-warning), 0.1);
-  box-shadow: 0 0 2px rgba(var(--color-warning), 0.5);
+  box-shadow: 0 0 4px rgba(var(--color-warning), 0.5);
 }
