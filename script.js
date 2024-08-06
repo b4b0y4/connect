@@ -52,7 +52,7 @@ async function selectWallet(name) {
 
     shortAddress(accounts[0])
     providerEvent(selectedProvider)
-    updateNetworkButton(chainId)
+    updateNetworkStatus(chainId)
     updateSettings()
     renderWallets()
 
@@ -157,14 +157,14 @@ async function switchNetwork(newNetwork) {
     localStorage.setItem("currentChainId", newNetwork.chainIdHex)
 
     renderChainList()
-    updateNetworkButton(newNetwork.chainIdHex)
+    updateNetworkStatus(newNetwork.chainIdHex)
   } catch (error) {
     console.error("Error switching network:", error)
   }
 }
 
 let networkWarning = false
-function updateNetworkButton(chainId) {
+function updateNetworkStatus(chainId) {
   const network = Object.values(networkConfigs).find(
     (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId
   )
@@ -249,7 +249,7 @@ function providerEvent(provider) {
     )
     .on("chainChanged", (chainId) => {
       console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
-      updateNetworkButton(chainId)
+      updateNetworkStatus(chainId)
       renderChainList()
     })
     .on("disconnect", () => {
@@ -301,7 +301,7 @@ window.addEventListener("eip6963:announceProvider", (event) => {
 
 window.addEventListener("load", async () => {
   const storedChainId = localStorage.getItem("currentChainId")
-  if (storedChainId) updateNetworkButton(storedChainId)
+  if (storedChainId) updateNetworkStatus(storedChainId)
   updateSettings()
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
