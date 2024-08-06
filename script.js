@@ -163,26 +163,26 @@ async function switchNetwork(newNetwork) {
   }
 }
 
-let networkWarningShown = false
-
+let networkWarning = false
 function updateNetworkButton(chainId) {
   const network = Object.values(networkConfigs).find(
     (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId
   )
-  if (network && network.showInUI) {
-    networkIcon.src = network.icon
-    toggleDisplay(overlay, false)
-    localStorage.setItem("currentChainId", chainId)
+  const isValidNetwork = network && network.showInUI
+
+  networkIcon.src = isValidNetwork ? network.icon : "./logo/warning.svg"
+  toggleDisplay(overlay, !isValidNetwork)
+  localStorage[isValidNetwork ? "setItem" : "removeItem"](
+    "currentChainId",
+    chainId
+  )
+
+  if (!isValidNetwork && !networkWarning) {
+    showNotification("Switch Network!", "warning", true)
+    networkWarning = true
+  } else if (isValidNetwork) {
     showNotification("")
-    networkWarningShown = false
-  } else {
-    networkIcon.src = "./logo/warning.svg"
-    toggleDisplay(overlay, true)
-    localStorage.removeItem("currentChainId")
-    if (!networkWarningShown) {
-      showNotification("Switch Network!", "warning", true)
-      networkWarningShown = true
-    }
+    networkWarning = false
   }
   renderChainList()
 }
