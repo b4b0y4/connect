@@ -1,7 +1,6 @@
 import { ethers } from "./ethers.min.js";
 import { networkConfigs } from "./constants.js";
 
-// DOM Elements
 const networkBtn = document.querySelector("#networkBtn");
 const chevron = networkBtn.querySelector("span i");
 const chainList = document.querySelector("#chainList");
@@ -15,7 +14,6 @@ const networkIcon = document.querySelector("#networkIcon");
 
 const providers = [];
 
-// Helper functions
 const toggleDisplay = (element, show) => {
   element.style.display = show ? "block" : "none";
 };
