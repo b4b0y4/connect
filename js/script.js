@@ -292,13 +292,18 @@ function getTheme() {
  **************************************************/
 window.addEventListener("eip6963:announceProvider", (event) => {
   const providerDetail = event.detail;
-  providers.push(providerDetail);
-  renderWallets();
+  const providerName = providerDetail.info.name;
 
-  if (localStorage.getItem("connected"))
-    selectWallet(localStorage.getItem("lastWallet"));
+  if (!providers.some((p) => p.info.name === providerName)) {
+    providers.push(providerDetail);
+    renderWallets();
 
-  console.log(`Discovered provider: ${providerDetail.info.name}`);
+    if (localStorage.getItem("connected")) {
+      selectWallet(localStorage.getItem("lastWallet"));
+    }
+
+    console.log(`Discovered provider: ${providerName}`);
+  }
 });
 
 window.addEventListener("load", async () => {
