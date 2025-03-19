@@ -245,9 +245,6 @@ body {
 }
 
 #getWallets {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   border-bottom-left-radius: 15px;
