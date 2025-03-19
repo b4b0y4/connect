@@ -7,7 +7,6 @@ const chainList = document.querySelector("#chainList");
 const connectBtn = document.querySelector("#connectBtn");
 const walletList = document.querySelector("#walletList");
 const walletBox = document.querySelector("#wallets");
-const whatsBtn = document.querySelector("#whats");
 const disconnectBtn = document.querySelector("#disconnect");
 const overlay = document.querySelector("#overlay");
 const networkIcon = document.querySelector("#networkIcon");
@@ -239,6 +238,8 @@ async function disconnect() {
   updateSettings();
   renderWallets();
   renderChainList();
+
+  disconnectBtn.style.display = "none";
 }
 
 function providerEvent(provider) {
