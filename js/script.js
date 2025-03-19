@@ -113,7 +113,6 @@ function togglewalletList() {
 
   const connected = localStorage.getItem("connected");
 
-  toggleDisplay(whatsBtn, connected ? false : true);
   toggleDisplay(disconnectBtn, connected ? true : false);
 }
 
@@ -232,7 +231,7 @@ async function disconnect() {
   }
 
   localStorage.clear();
-  connectBtn.innerHTML = "Connect Wallet";
+  connectBtn.innerHTML = "Connect";
   [(walletList, chainList, chevron, connectBtn)].forEach((el) => {
     el.classList.remove("show", "rotate", "connected");
   });
@@ -262,28 +261,53 @@ function providerEvent(provider) {
  *              DARK/LIGHT MODE TOGGLE
  **************************************************/
 const root = document.documentElement;
-const themeToggle = document.querySelector(".theme input");
-const themeLabel = document.querySelector(".theme");
+const themeButtons = document.querySelectorAll(".theme-button");
 
-function setDarkMode(isDarkMode) {
-  root.classList.toggle("dark-mode", isDarkMode);
-  themeToggle.checked = isDarkMode;
-  themeLabel.classList.toggle("dark", isDarkMode);
-}
+function setTheme(themeName) {
+  themeButtons.forEach((btn) => btn.setAttribute("data-active", "false"));
 
-function toggleDarkMode() {
-  const isDarkMode = themeToggle.checked;
-  setDarkMode(isDarkMode);
-  localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
-}
+  const activeButton = document.querySelector(
+    `.theme-button[data-theme="${themeName}"]`,
+  );
+  activeButton.setAttribute("data-active", "true");
 
-function getTheme() {
-  let savedDarkMode = JSON.parse(localStorage.getItem("darkMode"));
-  if (savedDarkMode === null) {
-    savedDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (themeName === "light") {
+    root.classList.remove("dark-mode");
+  } else if (themeName === "dark") {
+    root.classList.add("dark-mode");
+  } else if (themeName === "system") {
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    root.classList.toggle("dark-mode", prefersDark);
   }
-  setDarkMode(savedDarkMode);
+
+  localStorage.setItem("themePreference", themeName);
 }
+
+function initTheme() {
+  const savedTheme = localStorage.getItem("themePreference");
+
+  const themeToUse = savedTheme || "system";
+  setTheme(themeToUse);
+}
+
+themeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const themeName = button.dataset.theme;
+    setTheme(themeName);
+  });
+});
+
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (e) => {
+    if (localStorage.getItem("themePreference") === "system") {
+      root.classList.toggle("dark-mode", e.matches);
+    }
+  });
+
+document.addEventListener("DOMContentLoaded", initTheme);
 
 /***************************************************
  *              EVENT LISTENERS
@@ -314,18 +338,8 @@ window.addEventListener("load", async () => {
   if (selectedProvider) providerEvent(selectedProvider);
   renderChainList();
 
-  getTheme();
   root.classList.remove("no-flash");
 });
-
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", (event) => {
-    const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"));
-    if (savedDarkMode === null) {
-      setDarkMode(event.matches);
-    }
-  });
 
 networkBtn.addEventListener("click", (event) => {
   event.stopPropagation();
@@ -350,7 +364,5 @@ chainList.addEventListener("click", (event) => event.stopPropagation());
 walletList.addEventListener("click", (event) => event.stopPropagation());
 
 disconnectBtn.addEventListener("click", disconnect);
-
-themeToggle.addEventListener("change", toggleDarkMode);
 
 window.dispatchEvent(new Event("eip6963:requestProvider"));
