@@ -230,7 +230,7 @@ async function disconnect() {
   }
 
   localStorage.clear();
-  connectBtn.innerHTML = "Connect";
+  connectBtn.innerHTML = "Connect Wallet";
   [(walletList, chainList, chevron, connectBtn)].forEach((el) => {
     el.classList.remove("show", "rotate", "connected");
   });
