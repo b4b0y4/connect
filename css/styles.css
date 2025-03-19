@@ -188,9 +188,10 @@ body {
   transform: scale(1);
 }
 
-.wallet-list button,
+#wallets button,
 .chain-list button,
-#settings {
+#settings,
+#getWallets {
   color: var(--color-txt);
   background-color: var(--color-btn);
   background-image: none;
@@ -202,7 +203,7 @@ body {
   transition: background-color 0.3s ease-in-out;
 }
 
-.wallet-list button:hover,
+#wallets button:hover,
 .chain-list button:hover {
   background-color: var(--color-hvr);
 }
@@ -219,15 +220,16 @@ body {
   margin-bottom: 0;
 }
 
-.wallet-list img {
+#wallets img {
   height: 32px;
   width: 32px;
   margin-right: 8px;
   border-radius: 5px;
 }
 
-.wallet-list button,
-#settings {
+#wallets button,
+#settings,
+#getWallets {
   height: 50px;
 }
 
@@ -242,9 +244,29 @@ body {
   margin-top: 0;
 }
 
-#settings.nowallet {
-  border-radius: 15px;
+#getWallets {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
   margin-bottom: 0;
+}
+
+#getWallets a {
+  text-decoration: none;
+  color: var(--color-txt);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#getWallets:hover {
+  background-color: var(--color-hvr);
 }
 
 #wallets button:last-child {

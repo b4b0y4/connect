@@ -117,9 +117,9 @@ function togglewalletList() {
 
 function updateSettings() {
   const hasProvider = providers.length > 0;
-  document
-    .querySelector("#settings")
-    .classList.toggle("nowallet", !hasProvider);
+  document.querySelector("#getWallets").style.display = hasProvider
+    ? "none"
+    : "block";
 }
 
 function renderChainList() {
@@ -320,11 +320,11 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   if (!providers.some((p) => p.info.name === providerName)) {
     providers.push(providerDetail);
     renderWallets();
+    updateSettings();
 
     if (localStorage.getItem("connected")) {
       selectWallet(localStorage.getItem("lastWallet"));
     }
-
     console.log(`Discovered provider: ${providerName}`);
   }
 });
