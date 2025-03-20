@@ -73,8 +73,8 @@ body {
   z-index: 100;
 }
 
-.network button,
-.connectivity button {
+#networkBtn,
+#connectBtn {
   display: flex;
   align-items: center;
   font-size: 1em;
@@ -89,7 +89,7 @@ body {
   transition: box-shadow 0.3s ease-in-out;
 }
 
-.network button {
+#networkBtn {
   background: transparent;
 }
 
@@ -192,13 +192,16 @@ body {
 .chain-list button,
 #settings,
 #getWallets {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+  border: none;
   color: var(--color-txt);
   background-color: var(--color-btn);
   background-image: none;
   width: 100%;
   height: 40px;
   padding: 7.5px;
-  border-radius: 0;
   margin: 2.5px 0;
   transition: background-color 0.3s ease-in-out;
 }
@@ -272,31 +275,32 @@ body {
   margin-bottom: 0;
 }
 
-#disconnect {
-  justify-content: center;
+#settings button {
   height: 32px;
   width: 32px;
   border-radius: 10px;
-  background-color: var(--color-hvr);
-  transition: box-shadow 0.3s ease-in-out;
+  font-size: 1em;
+  border: none;
+  background-color: var(--color-bg);
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
 }
 
-#disconnect:hover {
-  box-shadow: 0 0 0 1px var(--color-hvr);
+#settings button:hover {
+  background-color: var(--color-hvr);
+}
+
+#disconnect {
+  color: var(--color-txt);
 }
 
 .theme-container {
   display: flex;
+  gap: 5px;
 }
 
 .theme-button {
   position: relative;
-  border: none;
-  background: transparent !important;
-  cursor: pointer;
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 10px !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -304,10 +308,6 @@ body {
   transition:
     color 0.3s ease-in-out,
     background-color 0.3s ease-in-out;
-}
-
-.theme-button:hover {
-  background-color: var(--color-hvr) !important;
 }
 
 .theme-button[data-active="true"] {
