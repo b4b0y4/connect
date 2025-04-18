@@ -261,54 +261,46 @@ function providerEvent(provider) {
 /***************************************************
  *              DARK/LIGHT MODE TOGGLE
  **************************************************/
-const root = document.documentElement;
-const themeButtons = document.querySelectorAll(".theme-button");
+const themeManager = {
+  root: document.documentElement,
+  buttons: document.querySelectorAll(".theme-button"),
 
-function setTheme(themeName) {
-  themeButtons.forEach((btn) => btn.setAttribute("data-active", "false"));
+  init() {
+    const savedTheme = localStorage.getItem("theme") || "system";
+    this.setTheme(savedTheme);
 
-  const activeButton = document.querySelector(
-    `.theme-button[data-theme="${themeName}"]`,
-  );
-  activeButton.setAttribute("data-active", "true");
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        if (localStorage.getItem("theme") === "system") {
+          this.root.classList.toggle("dark-mode", e.matches);
+        }
+      });
 
-  if (themeName === "light") {
-    root.classList.remove("dark-mode");
-  } else if (themeName === "dark") {
-    root.classList.add("dark-mode");
-  } else if (themeName === "system") {
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    root.classList.toggle("dark-mode", prefersDark);
-  }
+    this.buttons.forEach((btn) =>
+      btn.addEventListener("click", () => this.setTheme(btn.dataset.theme)),
+    );
+  },
 
-  localStorage.setItem("themePreference", themeName);
-}
+  setTheme(theme) {
+    this.buttons.forEach((btn) =>
+      btn.setAttribute("data-active", btn.dataset.theme === theme),
+    );
 
-function initTheme() {
-  const savedTheme = localStorage.getItem("themePreference");
-
-  const themeToUse = savedTheme || "system";
-  setTheme(themeToUse);
-}
-
-themeButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const themeName = button.dataset.theme;
-    setTheme(themeName);
-  });
-});
-
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", (e) => {
-    if (localStorage.getItem("themePreference") === "system") {
-      root.classList.toggle("dark-mode", e.matches);
+    if (theme === "system") {
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      this.root.classList.toggle("dark-mode", prefersDark);
+    } else {
+      this.root.classList.toggle("dark-mode", theme === "dark");
     }
-  });
 
-document.addEventListener("DOMContentLoaded", initTheme);
+    localStorage.setItem("theme", theme);
+  },
+};
+
+document.addEventListener("DOMContentLoaded", () => themeManager.init());
 
 /***************************************************
  *              EVENT LISTENERS
@@ -339,7 +331,7 @@ window.addEventListener("load", async () => {
   if (selectedProvider) providerEvent(selectedProvider);
   renderChainList();
 
-  root.classList.remove("no-flash");
+  themeManager.root.classList.remove("no-flash");
 });
 
 networkBtn.addEventListener("click", (event) => {
