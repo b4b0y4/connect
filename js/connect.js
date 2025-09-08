@@ -78,6 +78,14 @@ export class ConnectWallet {
       this.updateNetworkStatus(chainId);
       this.render();
 
+      if (this.onConnectCallback) {
+        this.onConnectCallback({
+          accounts,
+          chainId,
+          provider: provider.info.name,
+        });
+      }
+
       return { accounts, chainId, provider: provider.provider };
     } catch (error) {
       console.error("Connection failed:", error);
@@ -94,6 +102,9 @@ export class ConnectWallet {
       })
       .on("chainChanged", (chainId) => {
         this.updateNetworkStatus(chainId);
+        if (this.onChainChangeCallback) {
+          this.onChainChangeCallback(chainId);
+        }
         this.render();
       })
       .on("disconnect", () => this.disconnect());
@@ -173,6 +184,10 @@ export class ConnectWallet {
     ["connectCurrentChainId", "connectLastWallet", "connectConnected"].forEach(
       (key) => this.storage.removeItem(key),
     );
+
+    if (this.onDisconnectCallback) {
+      this.onDisconnectCallback();
+    }
 
     if (this.elements.connectBtn) {
       this.elements.connectBtn.innerHTML = "Connect";

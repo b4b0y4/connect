@@ -15,9 +15,26 @@ A lightweight, framework-agnostic wallet connection library for Ethereum and EVM
 
 ## Quick Start
 
-### Full UI Integration
+### 1. Setup Files
 
-Use the complete UI with wallet selection and network switching:
+Include the required files in your project:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="./assets/css/connect.css">
+</head>
+<body>
+    <!-- Your HTML structure (see step 2) -->
+    <script src="./js/your-script.js" type="module"></script>
+</body>
+</html>
+```
+
+### 2. HTML Structure
+
+Add the connect widget HTML to your page:
 
 ```html
 <div class="connect-wrapper">
@@ -32,86 +49,83 @@ Use the complete UI with wallet selection and network switching:
         </div>
     </div>
 </div>
-
-<script type="module">
-import { ConnectWallet } from "./connect.js";
-
-// Initialize the wallet connect instance
-const walletConnect = new ConnectWallet();
-
-// Set up DOM elements once page loads
-document.addEventListener("DOMContentLoaded", () => {
-  const elements = {
-    connectBtn: document.querySelector("#connect-btn"),
-    connectChainList: document.querySelector("#connect-chain-list"),
-    connectWalletList: document.querySelector("#connect-wallet-list"),
-    connectWallets: document.querySelector("#connect-wallets"),
-  };
-
-  walletConnect.setElements(elements);
-
-  // Set up event listeners
-  if (elements.connectBtn) {
-    elements.connectBtn.addEventListener("click", (event) => {
-      event.stopPropagation();
-      walletConnect.toggleWalletList();
-    });
-  }
-
-  if (elements.connectWalletList) {
-    elements.connectWalletList.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
-  }
-
-  // Close wallet list when clicking outside
-  document.addEventListener("click", () => {
-    walletConnect.hideWalletList();
-  });
-
-  // Set up callbacks for connection events
-  walletConnect.onConnect((data) => {
-    console.log("Connected:", data);
-  });
-
-  walletConnect.onDisconnect(() => {
-    console.log("Disconnected");
-  });
-
-  walletConnect.onChainChange((chainId) => {
-    console.log("Chain changed to:", chainId);
-  });
-});
-
-// Export for global access if needed
-window.walletConnect = walletConnect;
-</script>
 ```
 
-## Sending Transactions
-
-### Simple ETH Transfer
+### 3. Initialize in Your Script
 
 ```javascript
-import { ConnectWallet } from './js/connectWallet.js';
-import { ethers } from './js/libs/ethers.min.js';
+import { ConnectWallet } from "./js/connect.js";
 
+// Create wallet instance
 const wallet = new ConnectWallet();
 
+// Wait for DOM to load
+document.addEventListener("DOMContentLoaded", () => {
+    // Bind to DOM elements
+    const elements = {
+        connectBtn: document.querySelector("#connect-btn"),
+        connectChainList: document.querySelector("#connect-chain-list"),
+        connectWalletList: document.querySelector("#connect-wallet-list"),
+        connectWallets: document.querySelector("#connect-wallets"),
+    };
+
+    wallet.setElements(elements);
+
+    // Set up click handlers
+    elements.connectBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        wallet.toggleWalletList();
+    });
+
+    elements.connectWalletList?.addEventListener("click", (e) => {
+        e.stopPropagation();
+    });
+
+    // Close wallet list when clicking outside
+    document.addEventListener("click", () => {
+        wallet.hideWalletList();
+    });
+
+    // Set up event listeners
+    wallet.onConnect((data) => {
+        console.log("Wallet connected:", data);
+        // Handle connection success
+    });
+
+    wallet.onDisconnect(() => {
+        console.log("Wallet disconnected");
+        // Handle disconnection
+    });
+
+    wallet.onChainChange((chainId) => {
+        console.log("Network changed:", chainId);
+        // Handle network change
+    });
+});
+```
+
+## Sending ETH
+
+### Basic ETH Transfer
+
+```javascript
 async function sendETH(toAddress, amount) {
-    const provider = wallet.getEthersProvider();
-    if (!provider) {
-        throw new Error('Wallet not connected');
+    // Check if wallet is connected
+    if (!wallet.isConnected()) {
+        throw new Error('Please connect your wallet first');
     }
 
+    const provider = wallet.getEthersProvider();
     const signer = await provider.getSigner();
 
     const tx = await signer.sendTransaction({
         to: toAddress,
-        value: ethers.parseEther(amount)
+        value: ethers.parseEther(amount) // Convert ETH to wei
     });
 
     console.log('Transaction sent:', tx.hash);
+
+    // Wait for confirmation
     const receipt = await tx.wait();
     console.log('Transaction confirmed:', receipt);
 
@@ -124,32 +138,33 @@ sendETH('0x742d35Cc...', '0.1') // Send 0.1 ETH
     .catch(error => console.error('Failed:', error));
 ```
 
-### Transaction with Custom Gas
+### ETH Transfer with Gas Control
 
 ```javascript
-async function sendWithCustomGas(toAddress, amount) {
+async function sendETHWithGas(toAddress, amount, gasOptions = {}) {
     const provider = wallet.getEthersProvider();
     const signer = await provider.getSigner();
 
-    // Estimate gas first
-    const gasEstimate = await signer.estimateGas({
-        to: toAddress,
-        value: ethers.parseEther(amount)
-    });
-
-    // Add 10% buffer to gas estimate
-    const gasLimit = gasEstimate * 110n / 100n;
+    // Get current gas prices
+    const feeData = await provider.getFeeData();
 
     const tx = await signer.sendTransaction({
         to: toAddress,
         value: ethers.parseEther(amount),
-        gasLimit: gasLimit,
-        maxFeePerGas: ethers.parseUnits('20', 'gwei'),
-        maxPriorityFeePerGas: ethers.parseUnits('2', 'gwei')
+        gasLimit: gasOptions.gasLimit || 21000,
+        maxFeePerGas: gasOptions.maxFeePerGas || feeData.maxFeePerGas,
+        maxPriorityFeePerGas: gasOptions.maxPriorityFeePerGas || feeData.maxPriorityFeePerGas
     });
 
-    return tx;
+    return await tx.wait();
 }
+
+// Usage with custom gas
+sendETHWithGas('0x742d35Cc...', '0.1', {
+    gasLimit: 25000,
+    maxFeePerGas: ethers.parseUnits('20', 'gwei'),
+    maxPriorityFeePerGas: ethers.parseUnits('2', 'gwei')
+});
 ```
 
 ## Contract Interactions
@@ -159,32 +174,40 @@ async function sendWithCustomGas(toAddress, amount) {
 ```javascript
 async function readContract(contractAddress, abi, methodName, ...args) {
     const provider = wallet.getEthersProvider();
-    if (!provider) {
-        throw new Error('Wallet not connected');
-    }
-
     const contract = new ethers.Contract(contractAddress, abi, provider);
-    const result = await contract[methodName](...args);
 
-    return result;
+    return await contract[methodName](...args);
 }
 
-// Example: Get ERC-20 token balance
+// Example: ERC-20 token info
 const ERC20_ABI = [
-    "function balanceOf(address owner) view returns (uint256)",
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
     "function decimals() view returns (uint8)",
-    "function symbol() view returns (string)"
+    "function totalSupply() view returns (uint256)",
+    "function balanceOf(address owner) view returns (uint256)"
 ];
 
+async function getTokenInfo(tokenAddress) {
+    const [name, symbol, decimals, totalSupply] = await Promise.all([
+        readContract(tokenAddress, ERC20_ABI, 'name'),
+        readContract(tokenAddress, ERC20_ABI, 'symbol'),
+        readContract(tokenAddress, ERC20_ABI, 'decimals'),
+        readContract(tokenAddress, ERC20_ABI, 'totalSupply')
+    ]);
+
+    return { name, symbol, decimals, totalSupply };
+}
+
+// Get user's token balance
 async function getTokenBalance(tokenAddress, userAddress) {
     const balance = await readContract(tokenAddress, ERC20_ABI, 'balanceOf', userAddress);
     const decimals = await readContract(tokenAddress, ERC20_ABI, 'decimals');
-    const symbol = await readContract(tokenAddress, ERC20_ABI, 'symbol');
 
-    const formattedBalance = ethers.formatUnits(balance, decimals);
-    console.log(`Balance: ${formattedBalance} ${symbol}`);
-
-    return { balance, decimals, symbol, formatted: formattedBalance };
+    return {
+        raw: balance,
+        formatted: ethers.formatUnits(balance, decimals)
+    };
 }
 ```
 
@@ -193,20 +216,13 @@ async function getTokenBalance(tokenAddress, userAddress) {
 ```javascript
 async function writeContract(contractAddress, abi, methodName, args = [], options = {}) {
     const provider = wallet.getEthersProvider();
-    if (!provider) {
-        throw new Error('Wallet not connected');
-    }
-
     const signer = await provider.getSigner();
     const contract = new ethers.Contract(contractAddress, abi, signer);
 
     const tx = await contract[methodName](...args, options);
     console.log('Transaction sent:', tx.hash);
 
-    const receipt = await tx.wait();
-    console.log('Transaction confirmed:', receipt);
-
-    return receipt;
+    return await tx.wait();
 }
 
 // Example: ERC-20 token transfer
@@ -226,46 +242,102 @@ async function transferTokens(tokenAddress, toAddress, amount, decimals = 18) {
 }
 
 // Usage
-transferTokens('0xA0b86a33...', '0x742d35Cc...', '100', 18)
+transferTokens('0xA0b86a33...', '0x742d35Cc...', '100')
     .then(receipt => console.log('Transfer successful!', receipt))
     .catch(error => console.error('Transfer failed:', error));
 ```
 
-### Contract with Complex Interactions
+### Approve and Transfer Pattern
 
 ```javascript
-// Example: Uniswap V2 token swap
-async function swapTokens(routerAddress, tokenIn, tokenOut, amountIn, minAmountOut, deadline) {
-    const UNISWAP_ROUTER_ABI = [
-        "function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)"
-    ];
-
-    const account = await wallet.getAccount();
-    const path = [tokenIn, tokenOut];
-
-    return await writeContract(
-        routerAddress,
-        UNISWAP_ROUTER_ABI,
-        'swapExactTokensForTokens',
-        [amountIn, minAmountOut, path, account, deadline]
-    );
-}
-
-// Multi-step transaction example
-async function approveAndSwap(tokenAddress, spenderAddress, amount) {
+async function approveTokens(tokenAddress, spenderAddress, amount, decimals = 18) {
     const ERC20_ABI = [
         "function approve(address spender, uint256 amount) returns (bool)"
     ];
 
+    const amountWei = ethers.parseUnits(amount.toString(), decimals);
+
+    return await writeContract(
+        tokenAddress,
+        ERC20_ABI,
+        'approve',
+        [spenderAddress, amountWei]
+    );
+}
+
+async function approveAndTransfer(tokenAddress, spenderAddress, toAddress, amount) {
     try {
         // Step 1: Approve tokens
         console.log('Approving tokens...');
-        await writeContract(tokenAddress, ERC20_ABI, 'approve', [spenderAddress, amount]);
+        await approveTokens(tokenAddress, spenderAddress, amount);
+
+        // Step 2: Transfer tokens (this would be called by the spender contract)
+        console.log('Transferring tokens...');
+        await transferTokens(tokenAddress, toAddress, amount);
+
+        console.log('Approve and transfer completed!');
+    } catch (error) {
+        console.error('Transaction failed:', error);
+        throw error;
+    }
+}
+```
+
+### Complex Contract Interactions
+
+```javascript
+// Example: Uniswap V3 token swap
+async function swapTokensUniswap(swapRouterAddress, tokenIn, tokenOut, fee, amountIn, minAmountOut) {
+    const SWAP_ROUTER_ABI = [
+        `function exactInputSingle((
+            address tokenIn,
+            address tokenOut,
+            uint24 fee,
+            address recipient,
+            uint256 deadline,
+            uint256 amountIn,
+            uint256 amountOutMinimum,
+            uint160 sqrtPriceLimitX96
+        )) external returns (uint256 amountOut)`
+    ];
+
+    const account = await wallet.getAccount();
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes
+
+    const params = {
+        tokenIn,
+        tokenOut,
+        fee, // 3000 for 0.3%, 500 for 0.05%
+        recipient: account,
+        deadline,
+        amountIn,
+        amountOutMinimum: minAmountOut,
+        sqrtPriceLimitX96: 0 // No price limit
+    };
+
+    return await writeContract(
+        swapRouterAddress,
+        SWAP_ROUTER_ABI,
+        'exactInputSingle',
+        [params]
+    );
+}
+
+// Multi-step DeFi interaction
+async function swapWithApproval(tokenAddress, swapRouterAddress, amountIn, minAmountOut) {
+    try {
+        // Step 1: Approve router to spend tokens
+        await approveTokens(tokenAddress, swapRouterAddress, amountIn);
 
         // Step 2: Perform swap
-        console.log('Swapping tokens...');
-        const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes
-        await swapTokens(spenderAddress, tokenAddress, '0x...', amount, 0, deadline);
+        await swapTokensUniswap(
+            swapRouterAddress,
+            tokenAddress,
+            '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+            3000, // 0.3% fee
+            ethers.parseUnits(amountIn, 18),
+            ethers.parseUnits(minAmountOut, 18)
+        );
 
         console.log('Swap completed successfully!');
     } catch (error) {
@@ -282,23 +354,17 @@ async function approveAndSwap(tokenAddress, spenderAddress, amount) {
 ```javascript
 async function signMessage(message) {
     const provider = wallet.getEthersProvider();
-    if (!provider) {
-        throw new Error('Wallet not connected');
-    }
-
     const signer = await provider.getSigner();
-    const signature = await signer.signMessage(message);
 
-    console.log('Message:', message);
-    console.log('Signature:', signature);
+    const signature = await signer.signMessage(message);
 
     return signature;
 }
 
 // Usage
 signMessage('Hello, Web3!')
-    .then(sig => console.log('Signed:', sig))
-    .catch(err => console.error('Signing failed:', err));
+    .then(signature => console.log('Signature:', signature))
+    .catch(error => console.error('Signing failed:', error));
 ```
 
 ### Typed Data Signing (EIP-712)
@@ -308,15 +374,14 @@ async function signTypedData(domain, types, value) {
     const provider = wallet.getEthersProvider();
     const signer = await provider.getSigner();
 
-    const signature = await signer.signTypedData(domain, types, value);
-    return signature;
+    return await signer.signTypedData(domain, types, value);
 }
 
-// Example: Sign a permit message
+// Example: ERC-20 Permit signature
 async function signPermit(tokenAddress, spender, value, nonce, deadline) {
     const domain = {
-        name: 'Token Name',
-        version: '1',
+        name: 'USD Coin', // Token name
+        version: '2',
         chainId: await wallet.getChainId(),
         verifyingContract: tokenAddress
     };
@@ -331,7 +396,7 @@ async function signPermit(tokenAddress, spender, value, nonce, deadline) {
         ]
     };
 
-    const value = {
+    const message = {
         owner: await wallet.getAccount(),
         spender,
         value,
@@ -339,74 +404,42 @@ async function signPermit(tokenAddress, spender, value, nonce, deadline) {
         deadline
     };
 
-    return await signTypedData(domain, types, value);
+    return await signTypedData(domain, types, message);
 }
 ```
 
-## Advanced Usage
+## Utility Functions
 
-### Custom Network Configuration
+### Get Account Balance
 
 ```javascript
-const customNetworks = {
-    ethereum: {
-        name: "Ethereum",
-        rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/YOUR-KEY",
-        chainId: 1,
-        chainIdHex: "0x1",
-        icon: "./assets/img/eth.png",
-        showInUI: true,
-    },
-    polygon: {
-        name: "Polygon",
-        rpcUrl: "https://polygon-rpc.com",
-        chainId: 137,
-        chainIdHex: "0x89",
-        icon: "./assets/img/polygon.png",
-        showInUI: true,
-    }
-};
+async function getBalance(address = null) {
+    const provider = wallet.getEthersProvider();
+    const account = address || await wallet.getAccount();
 
-const wallet = new ConnectWallet({
-    networkConfigs: customNetworks
-});
+    if (!account) throw new Error('No account available');
+
+    const balance = await provider.getBalance(account);
+    return {
+        raw: balance,
+        formatted: ethers.formatEther(balance)
+    };
+}
 ```
 
-### Event Handling
+### Check Connection Status
 
 ```javascript
-const wallet = new ConnectWallet();
-
-// Listen for connection events
-wallet.onConnect((data) => {
-    console.log('Wallet connected:', data.accounts[0]);
-    console.log('Chain ID:', data.chainId);
-    updateUI();
-});
-
-wallet.onDisconnect(() => {
-    console.log('Wallet disconnected');
-    resetUI();
-});
-
-wallet.onChainChange((chainId) => {
-    console.log('Network changed to:', chainId);
-    handleNetworkChange(chainId);
-});
-
-async function updateUI() {
+function checkConnection() {
+    const isConnected = wallet.isConnected();
     const account = await wallet.getAccount();
     const chainId = await wallet.getChainId();
-    const balance = await wallet.getEthersProvider()?.getBalance(account);
 
-    document.getElementById('account').textContent =
-        `${account.slice(0, 6)}...${account.slice(-4)}`;
-    document.getElementById('balance').textContent =
-        `${ethers.formatEther(balance || 0)} ETH`;
+    return { isConnected, account, chainId };
 }
 ```
 
-### Error Handling Best Practices
+### Error Handling
 
 ```javascript
 async function handleTransaction(transactionFunction) {
@@ -421,10 +454,11 @@ async function handleTransaction(transactionFunction) {
     } catch (error) {
         let message = 'Transaction failed';
 
+        // Handle common error codes
         if (error.code === 4001) {
             message = 'Transaction rejected by user';
         } else if (error.code === -32603) {
-            message = 'Internal error - check your wallet';
+            message = 'Internal error';
         } else if (error.reason) {
             message = error.reason;
         }
@@ -446,49 +480,90 @@ if (result.success) {
 }
 ```
 
-### Custom Storage Implementation
+## Advanced Configuration
+
+### Custom Network Setup
 
 ```javascript
-// Use session storage instead of localStorage
-const sessionStorage = {
-    setItem: (key, value) => window.sessionStorage.setItem(key, value),
-    getItem: (key) => window.sessionStorage.getItem(key),
-    removeItem: (key) => window.sessionStorage.removeItem(key)
+const customNetworks = {
+    ethereum: {
+        name: "Ethereum Mainnet",
+        rpcUrl: "https://eth-mainnet.g.alchemy.com/v2/YOUR-KEY",
+        chainId: 1,
+        chainIdHex: "0x1",
+        icon: "./assets/img/eth.png",
+        showInUI: true,
+    },
+    polygon: {
+        name: "Polygon",
+        rpcUrl: "https://polygon-rpc.com",
+        chainId: 137,
+        chainIdHex: "0x89",
+        icon: "./assets/img/polygon.png",
+        showInUI: true,
+    },
+    arbitrum: {
+        name: "Arbitrum One",
+        rpcUrl: "https://arb1.arbitrum.io/rpc",
+        chainId: 42161,
+        chainIdHex: "0xa4b1",
+        icon: "./assets/img/arbitrum.png",
+        showInUI: true,
+    }
 };
 
-const wallet = new ConnectWallet({ storage: sessionStorage });
+const wallet = new ConnectWallet({
+    networkConfigs: customNetworks
+});
+```
 
-// Or implement your own storage (e.g., encrypted storage)
-const customStorage = {
-    setItem: (key, value) => {
-        const encrypted = encrypt(value);
-        localStorage.setItem(key, encrypted);
-    },
-    getItem: (key) => {
-        const encrypted = localStorage.getItem(key);
-        return encrypted ? decrypt(encrypted) : null;
-    },
-    removeItem: (key) => localStorage.removeItem(key)
-};
+### Event Handlers
+
+```javascript
+// Set up comprehensive event handling
+wallet.onConnect((data) => {
+    console.log('Wallet connected:', data);
+    updateConnectedUI(data);
+});
+
+wallet.onDisconnect(() => {
+    console.log('Wallet disconnected');
+    resetUI();
+});
+
+wallet.onChainChange((chainId) => {
+    console.log('Network changed to:', chainId);
+    updateNetworkUI(chainId);
+});
+
+async function updateConnectedUI(data) {
+    const account = data.accounts[0];
+    const balance = await getBalance(account);
+
+    document.getElementById('account').textContent =
+        `${account.slice(0, 6)}...${account.slice(-4)}`;
+    document.getElementById('balance').textContent =
+        `${parseFloat(balance.formatted).toFixed(4)} ETH`;
+}
 ```
 
 ## API Reference
 
-### Constructor
+### Constructor Options
 
 ```javascript
 const wallet = new ConnectWallet({
-    networkConfigs: customNetworks, // Optional: custom network configuration
-    storage: customStorage          // Optional: custom storage implementation
+    networkConfigs: customNetworks, // Custom network configuration
+    storage: customStorage          // Custom storage implementation
 });
 ```
 
-### Connection Methods
+### Core Methods
 
-- `connectWallet(walletName)` - Connect to a specific wallet
+- `connectWallet(walletName)` - Connect to specific wallet
 - `disconnect()` - Disconnect from current wallet
 - `isConnected()` - Check connection status
-- `switchNetwork(networkConfig)` - Switch to different network
+- `switchNetwork(networkConfig)` - Switch networks
 
 ### Provider Methods
 
@@ -503,22 +578,22 @@ const wallet = new ConnectWallet({
 - `toggleWalletList()` - Show/hide wallet selection
 - `hideWalletList()` - Hide wallet selection
 
-### Event Handlers
+### Event Methods
 
-- `onConnect(callback)` - Called when wallet connects
-- `onDisconnect(callback)` - Called when wallet disconnects
-- `onChainChange(callback)` - Called when network changes
+- `onConnect(callback)` - Connection event handler
+- `onDisconnect(callback)` - Disconnection event handler
+- `onChainChange(callback)` - Network change event handler
 
 ## Requirements
 
 - Modern browser with ES6+ support
-- Web3 wallet extension (MetaMask, WalletConnect, etc.)
-- HTTPS (required by most wallets)
+- EIP-6963 compatible wallet (MetaMask, Coinbase, etc.)
+- HTTPS connection (required by most wallets)
 
 ## Dependencies
 
-- **ethers.js** - For blockchain interactions
-- **EIP-6963** compatible wallets for automatic discovery
+- **ethers.js** - Ethereum library for blockchain interactions
+- EIP-6963 compatible wallets for automatic discovery
 
 ## Browser Support
 
@@ -529,8 +604,8 @@ const wallet = new ConnectWallet({
 
 ## License
 
-MIT License - feel free to use in your projects!
+MIT License
 
 ## Contributing
 
-Issues and pull requests welcome! Check out the [GitHub repository](https://github.com/b4b0y4/connect) for more details.
+Issues and pull requests welcome! Check out the [GitHub repository](https://github.com/b4b0y4/connect).
