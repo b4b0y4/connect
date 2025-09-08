@@ -1,51 +1,26 @@
 :root {
-  --color-bg: #f4f4f4;
-  --color-txt: #5c5c5c;
-  --color-hvr: #d2d2d2;
-  --color-btn: #e8e8e8;
-  --color-bg-btn-start: #4babe7;
-  --color-bg-btn-end: #e47fe6;
-  --color-blue: 75, 186, 231;
-  --color-green: 46, 204, 113;
-  --color-red: 234, 51, 35;
+  --connect-color-bg: #f4f4f4;
+  --connect-color-txt: #5c5c5c;
+  --connect-color-hvr: #d2d2d2;
+  --connect-color-btn: #e8e8e8;
+  --connect-color-bg-btn-start: #4babe7;
+  --connect-color-bg-btn-end: #e47fe6;
+  --connect-color-green: 46, 204, 113;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    "Open Sans",
-    "Helvetica Neue",
-    sans-serif;
-  background-color: var(--color-bg);
-}
-
-.box {
-  position: fixed;
-  inset: 0;
-  overflow-x: hidden;
-}
-
-.wrapper {
+.connect-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 200px;
+  width: 100%;
+
+  * {
+    box-sizing: border-box;
+  }
 }
 
-.connectivity {
+.connect-widget {
   position: relative;
   user-select: none;
   z-index: 100;
@@ -54,50 +29,46 @@ body {
   gap: 5px;
 }
 
-#networkIcon {
-  width: 25px;
-  height: 25px;
-}
-
-#connectBtn {
+.connect-btn {
   display: flex;
   align-items: center;
   font-size: 1.1em;
-  color: var(--color-bg);
+  color: var(--connect-color-bg);
   background: linear-gradient(
     270deg,
-    var(--color-bg-btn-start),
-    var(--color-bg-btn-end)
+    var(--connect-color-bg-btn-start),
+    var(--connect-color-bg-btn-end)
   );
   background-size: 400% 400%;
-  animation: gradientFlow 8s ease infinite;
+  animation: connect-gradient-flow 8s ease infinite;
   border: none;
   height: 35px;
   padding: 7.5px 15px;
   border-radius: 10px;
   cursor: pointer;
   transition: box-shadow 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 0 0 0.5px var(--connect-color-hvr);
+  }
+
+  &.connected {
+    color: var(--connect-color-txt);
+    background: var(--connect-color-hvr);
+    padding: 7.5px;
+    background-size: initial;
+    animation: none;
+  }
+
+  img {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+    border: 1px solid var(--connect-color-bg);
+  }
 }
 
-#connectBtn:hover {
-  box-shadow: 0 0 0 0.5px var(--color-hvr);
-}
-
-#connectBtn.connected {
-  color: var(--color-txt);
-  background: var(--color-hvr);
-  background-size: initial;
-  animation: none;
-}
-
-#connectBtn img {
-  width: 24px;
-  height: 24px;
-  margin-right: 5px;
-  border: 1px solid var(--color-bg);
-}
-
-@keyframes gradientFlow {
+@keyframes connect-gradient-flow {
   0%,
   100% {
     background-position: 0% 50%;
@@ -107,13 +78,13 @@ body {
   }
 }
 
-.wallet-list {
+.connect-wallet-list {
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 10px;
   width: 220px;
-  background-color: var(--color-bg);
+  background-color: var(--connect-color-bg);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   padding: 5px;
   border-radius: 15px;
@@ -123,133 +94,149 @@ body {
   transition:
     opacity 0.3s ease-in-out,
     transform 0.3s ease-in-out;
+
+  &.show {
+    pointer-events: auto;
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.wallet-list.show {
-  pointer-events: auto;
-  opacity: 1;
-  transform: scale(1);
+.connect-wallets {
+  button {
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    border: none;
+    color: var(--connect-color-txt);
+    background-color: var(--connect-color-btn);
+    width: 100%;
+    height: 50px;
+    padding: 7.5px;
+    margin: 2.5px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color: var(--connect-color-hvr);
+    }
+
+    &:last-child {
+      border-radius: 0 0 15px 15px;
+      margin-bottom: 0;
+    }
+
+    img {
+      height: 32px;
+      width: 32px;
+      margin-right: 8px;
+      border-radius: 5px;
+    }
+  }
 }
 
-#wallets button,
-#getWallet {
+.connect-get-wallet {
   display: flex;
   align-items: center;
   font-size: 1em;
   border: none;
-  color: var(--color-txt);
-  background-color: var(--color-btn);
+  color: var(--connect-color-txt);
+  background-color: var(--connect-color-btn);
   width: 100%;
+  height: 50px;
   padding: 7.5px;
   margin: 2.5px 0;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
-}
-
-#wallets button:hover,
-#getWallet:hover {
-  background-color: var(--color-hvr);
-}
-
-#wallets button {
-  height: 50px;
-}
-
-#wallets button:last-child {
   border-radius: 0 0 15px 15px;
   margin-bottom: 0;
+
+  &:hover {
+    background-color: var(--connect-color-hvr);
+  }
+
+  a {
+    text-decoration: none;
+    color: var(--connect-color-txt);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
-#wallets img {
-  height: 32px;
-  width: 32px;
-  margin-right: 8px;
-  border-radius: 5px;
-}
-
-.chain-list {
+.connect-chain-list {
   display: flex;
   align-items: center;
   justify-content: space-around;
   gap: 5px;
-  background-color: var(--color-btn);
+  background-color: var(--connect-color-btn);
   width: 100%;
+  height: 50px;
   padding: 7.5px;
   margin: 0;
   border-radius: 15px 15px 0 0;
+
+  button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    /*color: var(--connect-color-txt);*/
+    /*background-color: var(--connect-color-bg);*/
+    /*width: 32px;*/
+    /*height: 32px;*/
+    padding: 0;
+    margin: 0;
+    /*border-radius: 10px;*/
+    cursor: pointer;
+    /*transition: background-color 0.3s ease-in-out;*/
+
+    /*&:hover {
+      background-color: var(--connect-color-hvr);
+    }*/
+
+    img {
+      width: 25px;
+      height: 25px;
+    }
+
+    .connect-indicator {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: rgb(var(--connect-color-green));
+      border: 1px solid var(--connect-color-bg);
+      box-shadow: none;
+      animation: none;
+    }
+  }
 }
 
-.chain-list button {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  color: var(--color-txt);
-  background-color: var(--color-bg);
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  margin: 0;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-}
-
-.chain-list button:hover {
-  background-color: var(--color-hvr);
-}
-
-.chain-list button img {
-  width: 20px;
-  height: 20px;
-}
-
-#getWallet {
-  height: 50px;
-  border-radius: 0 0 15px 15px;
-  margin-bottom: 0;
-}
-
-#getWallet a {
-  text-decoration: none;
-  color: var(--color-txt);
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.indicator {
+.connect-indicator {
   position: absolute;
   right: 15px;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: rgb(var(--color-green));
-  box-shadow: 0 0 0 0 rgba(var(--color-green), 0.5);
-  animation: pulse 1.5s ease-out infinite;
+  background-color: rgb(var(--connect-color-green));
+  box-shadow: 0 0 0 0 rgba(var(--connect-color-green), 0.5);
+  animation: connect-pulse 1.5s ease-out infinite;
 }
 
-.chain-list button .indicator {
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  border: 1px solid var(--color-bg);
-  box-shadow: none;
-  animation: none;
-}
-
-@keyframes pulse {
+@keyframes connect-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(var(--color-green), 0.5);
+    box-shadow: 0 0 0 0 rgba(var(--connect-color-green), 0.5);
   }
   70% {
-    box-shadow: 0 0 0 4px rgba(var(--color-green), 0);
+    box-shadow: 0 0 0 4px rgba(var(--connect-color-green), 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(var(--color-green), 0);
+    box-shadow: 0 0 0 0 rgba(var(--connect-color-green), 0);
   }
 }

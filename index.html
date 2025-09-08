@@ -7,26 +7,31 @@
     <link rel="stylesheet" href="./assets/css/connect.css" />
   </head>
   <body>
+    <style>
+      .box {
+        position: fixed;
+        inset: 0;
+        overflow-x: hidden;
+      }
+    </style>
     <div class="box">
       <a href="https://github.com/b4b0y4/connect" target="_blank">GitHub</a>
-      <!--  connect  -->
-      <div class="wrapper">
-        <div class="connectivity">
-          <button id="connectBtn">Connect</button>
-          <div id="walletList" class="wallet-list">
-            <div class="chain-list" id="chainList"></div>
-            <div id="getWallet">
+      <div class="connect-wrapper">
+        <div class="connect-widget">
+          <button id="connect-btn" class="connect-btn">Connect</button>
+          <div id="connect-wallet-list" class="connect-wallet-list">
+            <div class="connect-chain-list" id="connect-chain-list"></div>
+            <div id="connect-get-wallet" class="connect-get-wallet">
               <a href="https://ethereum.org/en/wallets/" target="_blank"
                 >Get a Wallet!</a
               >
             </div>
-            <div id="wallets"></div>
+            <div id="connect-wallets" class="connect-wallets"></div>
           </div>
         </div>
       </div>
-      <!--  connect  -->
     </div>
 
-    <script src="./js/script.js" type="module"></script>
+    <script src="./js/connect.js" type="module"></script>
   </body>
 </html>
