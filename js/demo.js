@@ -15,18 +15,14 @@ document.addEventListener("DOMContentLoaded", () => {
   walletConnect.setElements(elements);
 
   // Set up event listeners
-  if (elements.connectBtn) {
-    elements.connectBtn.addEventListener("click", (event) => {
-      event.stopPropagation();
-      walletConnect.toggleWalletList();
-    });
-  }
+  elements.connectBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    walletConnect.toggleWalletList();
+  });
 
-  if (elements.connectWalletList) {
-    elements.connectWalletList.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
-  }
+  elements.connectWalletList.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
 
   // Close wallet list when clicking outside
   document.addEventListener("click", () => {
