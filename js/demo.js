@@ -3,7 +3,6 @@ import { ConnectWallet } from "./connect.js";
 // Initialize the wallet connect instance
 const walletConnect = new ConnectWallet();
 
-// Set up DOM elements once page loads
 document.addEventListener("DOMContentLoaded", () => {
   const elements = {
     connectBtn: document.querySelector("#connect-btn"),
@@ -11,6 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
     connectWalletList: document.querySelector("#connect-wallet-list"),
     connectWallets: document.querySelector("#connect-wallets"),
   };
+
+  // Enforce existence of required elements
+  if (!elements) {
+    throw new Error("Missing required DOM elements");
+  }
 
   walletConnect.setElements(elements);
 
