@@ -1,7 +1,7 @@
 import { ConnectWallet } from "./connect.js";
 
 // Initialize the wallet connect instance
-const walletConnect = new ConnectWallet();
+const wallet = new ConnectWallet();
 
 document.addEventListener("DOMContentLoaded", () => {
   const elements = {
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     throw new Error("Missing required DOM elements");
   }
 
-  walletConnect.setElements(elements);
+  wallet.setElements(elements);
 
   // Set up event listeners
   elements.connectBtn.addEventListener("click", (event) => {
@@ -34,18 +34,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Set up callbacks for connection events
-  walletConnect.onConnect((data) => {
-    console.log("Connected:", data);
+  wallet.onConnect((data) => {
+    const account = data.accounts[0];
+    const shortAccount = `${account.slice(0, 6)}...${account.slice(-4)}`;
+    NotificationSystem.show(`Connected to ${shortAccount}`, "success");
   });
 
-  walletConnect.onDisconnect(() => {
-    console.log("Disconnected");
+  wallet.onDisconnect(() => {
+    NotificationSystem.show("Wallet disconnected", "danger");
   });
 
-  walletConnect.onChainChange((chainId) => {
-    console.log("Chain changed to:", chainId);
+  wallet.onChainChange((chainId) => {
+    NotificationSystem.show(`Switched to network ${chainId}`, "info");
   });
 });
 
 // Export for global access if needed
-window.walletConnect = walletConnect;
+window.walletConnect = wallet;

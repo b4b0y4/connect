@@ -64,3 +64,24 @@ export const networkConfigs = {
     showInUI: false,
   },
 };
+
+export const chainLookup = {};
+
+Object.values(networkConfigs).forEach((net) => {
+  if (net.showInUI) {
+    chainLookup[net.chainId] = { ...net };
+    chainLookup[net.chainIdHex] = { ...net };
+  }
+});
+
+// Utility function to get network name from any chain identifier
+export function getNetworkName(chainIdentifier) {
+  const net = chainLookup[chainIdentifier];
+  return net ? net.name : chainIdentifier;
+}
+
+// Example usage:
+console.log(chainLookup[1].name); // "Ethereum"
+console.log(chainLookup["0xa"].name); // "Optimism"
+console.log(getNetworkName(10)); // "Optimism"
+console.log(getNetworkName("0x2105")); // "Base"

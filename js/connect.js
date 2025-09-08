@@ -7,6 +7,8 @@ export class ConnectWallet {
     this.providers = [];
     this.storage = options.storage || window.localStorage;
     this.elements = {};
+    this.currentProvider = null;
+    this.eventsSetup = false;
 
     this.init();
   }
@@ -46,7 +48,7 @@ export class ConnectWallet {
       this.providers.push(providerDetail);
       this.render();
 
-      if (this.isConnected()) {
+      if (this.isConnected() && this.getLastWallet() === providerName) {
         this.connectWallet(this.getLastWallet());
       }
     }
@@ -94,6 +96,18 @@ export class ConnectWallet {
   }
 
   setupProviderEvents(provider) {
+    // Only setup events once per connection
+    if (this.currentProvider === provider.provider) {
+      return;
+    }
+
+    // Remove old event listeners if switching providers
+    if (this.currentProvider) {
+      this.currentProvider.removeAllListeners?.();
+    }
+
+    this.currentProvider = provider.provider;
+
     provider.provider
       .on("accountsChanged", (accounts) => {
         accounts.length > 0
@@ -179,6 +193,11 @@ export class ConnectWallet {
       });
     } catch (error) {
       console.error("Disconnect failed:", error);
+    }
+
+    if (this.currentProvider) {
+      this.currentProvider.removeAllListeners?.();
+      this.currentProvider = null;
     }
 
     ["connectCurrentChainId", "connectLastWallet", "connectConnected"].forEach(
