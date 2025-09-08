@@ -1,5 +1,5 @@
 import { ethers } from "./libs/ethers.min.js";
-import { networkConfigs } from "./constants.js";
+import { networkConfigs } from "./connect-config.js";
 
 const connectBtn = document.querySelector("#connect-btn");
 const connectChainList = document.querySelector("#connect-chain-list");

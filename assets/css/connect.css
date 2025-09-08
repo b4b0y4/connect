@@ -1,11 +1,25 @@
 :root {
-  --connect-color-bg: #f4f4f4;
-  --connect-color-txt: #5c5c5c;
-  --connect-color-hvr: #d2d2d2;
-  --connect-color-btn: #e8e8e8;
-  --connect-color-bg-btn-start: #4babe7;
-  --connect-color-bg-btn-end: #e47fe6;
+  --connect-color-btn: color-mix(in srgb, var(--color-bg) 92%, black 8%);
+  --connect-color-hvr: color-mix(
+    in srgb,
+    var(--connect-color-btn) 88%,
+    black 12%
+  );
+  --connect-shadow: 0 2px 5px color-mix(in srgb, black 20%, transparent);
+  --color-bg-btn-start: #4babe7;
+  --color-bg-btn-end: #e47fe6;
   --connect-color-green: 46, 204, 113;
+}
+
+[data-theme="dark"] {
+  --connect-color-btn: color-mix(in srgb, var(--color-bg) 90%, white 10%);
+  --connect-color-hvr: color-mix(
+    in srgb,
+    var(--connect-color-btn) 86%,
+    white 14%
+  );
+  --connect-shadow: 0 2px 5px color-mix(in srgb, white 15%, transparent);
+  --color-bg-btn-end: #57d47c;
 }
 
 .connect-wrapper {
@@ -33,11 +47,11 @@
   display: flex;
   align-items: center;
   font-size: 1.1em;
-  color: var(--connect-color-bg);
+  color: var(--color-bg);
   background: linear-gradient(
     270deg,
-    var(--connect-color-bg-btn-start),
-    var(--connect-color-bg-btn-end)
+    var(--color-bg-btn-start),
+    var(--color-bg-btn-end)
   );
   background-size: 400% 400%;
   animation: connect-gradient-flow 8s ease infinite;
@@ -49,12 +63,12 @@
   transition: box-shadow 0.3s ease-in-out;
 
   &:hover {
-    box-shadow: 0 0 0 0.5px var(--connect-color-hvr);
+    box-shadow: 0 0 0 0.5px var(--connect-color-btn);
   }
 
   &.connected {
-    color: var(--connect-color-txt);
-    background: var(--connect-color-hvr);
+    color: var(--color-txt);
+    background: var(--connect-color-btn);
     padding: 7.5px;
     background-size: initial;
     animation: none;
@@ -64,7 +78,7 @@
     width: 24px;
     height: 24px;
     margin-right: 5px;
-    border: 1px solid var(--connect-color-bg);
+    border: 1px solid var(--color-bg);
   }
 }
 
@@ -84,8 +98,8 @@
   right: 0;
   margin-top: 10px;
   width: 220px;
-  background-color: var(--connect-color-bg);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: var(--color-bg);
+  box-shadow: var(--connect-shadow);
   padding: 5px;
   border-radius: 15px;
   opacity: 0;
@@ -108,7 +122,7 @@
     align-items: center;
     font-size: 1em;
     border: none;
-    color: var(--connect-color-txt);
+    color: var(--color-txt);
     background-color: var(--connect-color-btn);
     width: 100%;
     height: 50px;
@@ -140,7 +154,7 @@
   align-items: center;
   font-size: 1em;
   border: none;
-  color: var(--connect-color-txt);
+  color: var(--color-txt);
   background-color: var(--connect-color-btn);
   width: 100%;
   height: 50px;
@@ -157,7 +171,7 @@
 
   a {
     text-decoration: none;
-    color: var(--connect-color-txt);
+    color: var(--color-txt);
     width: 100%;
     height: 100%;
     display: flex;
@@ -183,20 +197,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: transparent;
     border: none;
-    /*color: var(--connect-color-txt);*/
-    /*background-color: var(--connect-color-bg);*/
-    /*width: 32px;*/
-    /*height: 32px;*/
     padding: 0;
     margin: 0;
-    /*border-radius: 10px;*/
     cursor: pointer;
-    /*transition: background-color 0.3s ease-in-out;*/
-
-    /*&:hover {
-      background-color: var(--connect-color-hvr);
-    }*/
 
     img {
       width: 25px;
@@ -211,7 +216,7 @@
       height: 10px;
       border-radius: 50%;
       background-color: rgb(var(--connect-color-green));
-      border: 1px solid var(--connect-color-bg);
+      border: 1px solid var(--color-bg);
       box-shadow: none;
       animation: none;
     }

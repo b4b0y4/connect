@@ -8,6 +8,16 @@
   </head>
   <body>
     <style>
+      :root {
+        --color-bg: #f4f4f4;
+        --color-txt: #5c5c5c;
+      [data-theme="dark"] {
+        --color-bg: #201f1f;
+        --color-txt: #adadae;
+      }
+      body {
+        background-color: var(--color-bg);
+      }
       .box {
         position: fixed;
         inset: 0;
