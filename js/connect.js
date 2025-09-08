@@ -10,7 +10,31 @@ export class ConnectWallet {
     this.currentProvider = null;
     this.eventsSetup = false;
 
+    // Precompute lookups
+    this.chainIdToName = {};
+    this.allowedChains = [];
+    Object.values(this.networkConfigs).forEach((cfg) => {
+      this.chainIdToName[cfg.chainId] = cfg.name;
+      if (cfg.showInUI) {
+        this.allowedChains.push(cfg.chainId);
+      }
+    });
+
     this.init();
+  }
+
+  // Normalize hex or decimal chainId
+  normalizeChainId(chainId) {
+    if (typeof chainId === "string" && chainId.startsWith("0x")) {
+      return parseInt(chainId, 16);
+    }
+    return Number(chainId);
+  }
+
+  // Check if chain is allowed
+  isAllowed(chainId) {
+    const normalized = this.normalizeChainId(chainId);
+    return this.allowedChains.includes(normalized);
   }
 
   init() {
@@ -117,7 +141,16 @@ export class ConnectWallet {
       .on("chainChanged", (chainId) => {
         this.updateNetworkStatus(chainId);
         if (this.onChainChangeCallback) {
-          this.onChainChangeCallback(chainId);
+          const normalized = this.normalizeChainId(chainId);
+          const name = this.chainIdToName[normalized] || `Unknown (${chainId})`;
+          const allowed = this.isAllowed(chainId);
+
+          this.onChainChangeCallback({
+            chainId: normalized,
+            hexChainId: chainId,
+            name,
+            allowed,
+          });
         }
         this.render();
       })
@@ -172,8 +205,9 @@ export class ConnectWallet {
   }
 
   updateNetworkStatus(chainId) {
+    const normalized = this.normalizeChainId(chainId);
     const network = Object.values(this.networkConfigs).find(
-      (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId,
+      (net) => net.chainId === normalized || net.chainIdHex === chainId,
     );
 
     if (network?.showInUI) {

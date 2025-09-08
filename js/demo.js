@@ -1,6 +1,5 @@
 import { ConnectWallet } from "./connect.js";
 
-// Initialize the wallet connect instance
 const wallet = new ConnectWallet();
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,29 +10,21 @@ document.addEventListener("DOMContentLoaded", () => {
     connectWallets: document.querySelector("#connect-wallets"),
   };
 
-  // Enforce existence of required elements
-  if (!elements) {
-    throw new Error("Missing required DOM elements");
-  }
-
   wallet.setElements(elements);
 
-  // Set up event listeners
   elements.connectBtn.addEventListener("click", (event) => {
     event.stopPropagation();
-    walletConnect.toggleWalletList();
+    wallet.toggleWalletList();
   });
 
   elements.connectWalletList.addEventListener("click", (event) => {
     event.stopPropagation();
   });
 
-  // Close wallet list when clicking outside
   document.addEventListener("click", () => {
-    walletConnect.hideWalletList();
+    wallet.hideWalletList();
   });
 
-  // Set up callbacks for connection events
   wallet.onConnect((data) => {
     const account = data.accounts[0];
     const shortAccount = `${account.slice(0, 6)}...${account.slice(-4)}`;
@@ -41,13 +32,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   wallet.onDisconnect(() => {
-    NotificationSystem.show("Wallet disconnected", "danger");
+    NotificationSystem.show("Wallet disconnected", "warning");
   });
 
-  wallet.onChainChange((chainId) => {
-    NotificationSystem.show(`Switched to network ${chainId}`, "info");
+  wallet.onChainChange(({ chainId, name, allowed }) => {
+    if (!allowed) {
+      NotificationSystem.show(`Chain ${chainId} is not allowed`, "danger");
+      return;
+    }
+
+    NotificationSystem.show(`Switched to ${name}`, "info");
   });
 });
 
-// Export for global access if needed
 window.walletConnect = wallet;
