@@ -18,120 +18,36 @@
       }
       body {
         background-color: var(--color-bg);
+        font-family: system-ui, sans-serif;
       }
       .box {
         position: fixed;
         inset: 0;
         overflow-x: hidden;
       }
-      .demo-info {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        background: var(--color-bg);
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 15px;
-        max-width: 300px;
-        font-family: system-ui, sans-serif;
-        font-size: 14px;
-        color: var(--color-txt);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-      .demo-info h3 {
-        margin: 0 0 10px 0;
-        font-size: 16px;
-      }
-      .demo-info p {
-        margin: 5px 0;
-      }
-      .demo-actions {
+      .github-link {
         position: absolute;
         top: 20px;
         right: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .demo-btn {
-        padding: 8px 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        background: #007cba;
-        color: white;
-      }
-      .demo-btn:hover {
-        background: #005a8b;
-      }
-      .demo-btn.danger {
-        background: #dc3545;
-      }
-      .demo-btn.danger:hover {
-        background: #b02a37;
-      }
-      .demo-logs {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-        right: 20px;
-        height: 150px;
-        background: var(--color-bg);
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 15px;
-        overflow-y: auto;
-        font-family: monospace;
-        font-size: 12px;
         color: var(--color-txt);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        font-weight: 500;
       }
-      .demo-logs h4 {
-        margin: 0 0 10px 0;
-        font-family: system-ui, sans-serif;
-        font-size: 14px;
-      }
-      .log-entry {
-        margin: 2px 0;
-        opacity: 0.8;
-      }
-      .log-entry.success {
-        color: #28a745;
-      }
-      .log-entry.error {
-        color: #dc3545;
-      }
-      .log-entry.info {
-        color: #007cba;
+      .github-link:hover {
+        text-decoration: underline;
       }
     </style>
 
     <div class="box">
-      <!-- Demo Info Panel -->
-      <div class="demo-info">
-        <h3>Wallet Status</h3>
-        <p><strong>Connected:</strong> <span id="status">No</span></p>
-        <p><strong>Account:</strong> <span id="account">-</span></p>
-        <p><strong>Chain:</strong> <span id="chainId">-</span></p>
-        <p><strong>Wallets Found:</strong> <span id="walletCount">0</span></p>
-      </div>
-
-      <!-- Demo Actions -->
-      <div class="demo-actions">
-        <button class="demo-btn" onclick="testSignMessage()">
-          Sign Message
-        </button>
-        <button class="demo-btn" onclick="getBalance()">Get Balance</button>
-        <button class="demo-btn danger" onclick="disconnect()">
-          Disconnect
-        </button>
-      </div>
-
       <!-- GitHub Link -->
-      <a href="https://github.com/b4b0y4/connect" target="_blank">GitHub</a>
+      <a
+        href="https://github.com/b4b0y4/connect"
+        target="_blank"
+        class="github-link"
+        >GitHub</a
+      >
 
-      <!-- Connect Widget - The Star of the Show -->
+      <!-- Connect Widget -->
       <div class="connect-wrapper">
         <div class="connect-widget">
           <button id="connect-btn" class="connect-btn">Connect</button>
@@ -146,135 +62,8 @@
           </div>
         </div>
       </div>
-
-      <!-- Demo Logs -->
-      <div class="demo-logs">
-        <h4>Console Logs</h4>
-        <div id="logOutput"></div>
-      </div>
     </div>
 
     <script src="./js/demo.js" type="module"></script>
-    <script type="module">
-      // Get the wallet instance from demo.js
-      let wallet;
-
-      // Wait for demo.js to initialize
-      setTimeout(() => {
-        wallet = window.walletConnect;
-
-        if (wallet) {
-          // Set up additional event listeners for demo
-          wallet.onConnect((data) => {
-            log(
-              `Connected to wallet with account: ${data.accounts[0]}`,
-              "success",
-            );
-            updateStatus();
-          });
-
-          wallet.onDisconnect(() => {
-            log("Wallet disconnected", "info");
-            updateStatus();
-          });
-
-          wallet.onChainChange((chainId) => {
-            log(`Chain changed to: ${chainId}`, "info");
-            updateStatus();
-          });
-
-          // Initial status update
-          updateStatus();
-
-          log(
-            "Demo initialized. Use the connect widget to connect and switch networks.",
-            "info",
-          );
-        }
-      }, 500);
-
-      // Demo functions
-      window.testSignMessage = async () => {
-        const provider = wallet?.getEthersProvider();
-        if (!provider) {
-          log("No provider available. Please connect wallet first.", "error");
-          return;
-        }
-
-        try {
-          const signer = await provider.getSigner();
-          const message = "Hello from ConnectWallet Example!";
-          const signature = await signer.signMessage(message);
-          log(
-            `Message signed successfully: ${signature.slice(0, 20)}...`,
-            "success",
-          );
-        } catch (error) {
-          log(`Message signing failed: ${error.message}`, "error");
-        }
-      };
-
-      window.getBalance = async () => {
-        const provider = wallet?.getEthersProvider();
-        const account = await wallet?.getAccount();
-
-        if (!provider || !account) {
-          log(
-            "No provider or account available. Please connect wallet first.",
-            "error",
-          );
-          return;
-        }
-
-        try {
-          const balance = await provider.getBalance(account);
-          const balanceEth = parseFloat(balance) / 1e18;
-          log(`Balance: ${balanceEth.toFixed(6)} ETH`, "success");
-        } catch (error) {
-          log(`Balance check failed: ${error.message}`, "error");
-        }
-      };
-
-      window.disconnect = async () => {
-        if (wallet) {
-          await wallet.disconnect();
-        }
-      };
-
-      // Update status display
-      async function updateStatus() {
-        if (!wallet) return;
-
-        const isConnected = wallet.isConnected();
-        const account = await wallet.getAccount();
-        const chainId = await wallet.getChainId();
-
-        document.getElementById("status").textContent = isConnected
-          ? "Yes"
-          : "No";
-        document.getElementById("account").textContent = account
-          ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}`
-          : "-";
-        document.getElementById("chainId").textContent = chainId || "-";
-        document.getElementById("walletCount").textContent =
-          wallet.providers.length;
-      }
-
-      // Log function
-      function log(message, type = "info") {
-        const logOutput = document.getElementById("logOutput");
-        const timestamp = new Date().toLocaleTimeString();
-        const entry = document.createElement("div");
-        entry.className = `log-entry ${type}`;
-        entry.textContent = `[${timestamp}] ${message}`;
-        logOutput.appendChild(entry);
-        logOutput.scrollTop = logOutput.scrollHeight;
-      }
-
-      // Update status periodically
-      setInterval(() => {
-        if (wallet) updateStatus();
-      }, 30000);
-    </script>
   </body>
 </html>
