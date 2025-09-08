@@ -1,63 +1,43 @@
 import { ethers } from "./libs/ethers.min.js";
 import { networkConfigs } from "./constants.js";
 
-const networkBtn = document.querySelector("#networkBtn");
-const chevron = networkBtn.querySelector("span i");
-const chainList = document.querySelector("#chainList");
 const connectBtn = document.querySelector("#connectBtn");
+const chainList = document.querySelector("#chainList");
 const walletList = document.querySelector("#walletList");
 const walletBox = document.querySelector("#wallets");
-const disconnectBtn = document.querySelector("#disconnect");
-const overlay = document.querySelector("#overlay");
-const networkIcon = document.querySelector("#networkIcon");
 
 const providers = [];
 
-const toggleDisplay = (element, show) => {
-  element.style.display = show ? "block" : "none";
-};
-
 function createButton(config, onClick) {
   const button = document.createElement("button");
-  button.innerHTML = `
-      <img src="${config.icon}">
-      ${config.name}
-      <span class="indicator" style="display: none"></span>
-    `;
+  button.innerHTML = `<img src="${config.icon}">${config.name}<span class="indicator" style="display: none"></span>`;
   button.onclick = onClick;
   return button;
 }
 
-/***********************************************************
- *                     CONNECTIVITY
- **********************************************************/
 async function selectWallet(name) {
   const selectedProvider = providers.find((p) => p.info.name === name);
   if (!selectedProvider) return;
 
   try {
-    const accounts = await selectedProvider.provider.request({
-      method: "eth_requestAccounts",
-    });
-    const chainId = await selectedProvider.provider.request({
-      method: "eth_chainId",
-    });
+    const [accounts, chainId] = await Promise.all([
+      selectedProvider.provider.request({ method: "eth_requestAccounts" }),
+      selectedProvider.provider.request({ method: "eth_chainId" }),
+    ]);
 
-    localStorage.setItem("currentChainId", chainId);
-    localStorage.setItem("lastWallet", selectedProvider.info.name);
-    localStorage.setItem("connected", "true");
+    Object.assign(localStorage, {
+      currentChainId: chainId,
+      lastWallet: name,
+      connected: "true",
+    });
 
     shortAddress(accounts[0]);
     providerEvent(selectedProvider);
     updateNetworkStatus(chainId);
     updateSettings();
     renderWallets();
-
     connectBtn.classList.add("connected");
-
-    console.log(
-      `Connected to ${selectedProvider.info.name} with account: ${accounts[0]}`,
-    );
+    console.log(`Connected to ${name} with account: ${accounts[0]}`);
   } catch (error) {
     console.error("Failed to connect:", error);
   }
@@ -69,21 +49,17 @@ function renderWallets() {
 
   providers.forEach((provider) => {
     const button = createButton(provider.info, () => {
-      togglewalletList();
+      toggleWalletList();
       selectWallet(provider.info.name);
     });
-    const indicator = button.querySelector(".indicator");
-    indicator.style.display =
+    button.querySelector(".indicator").style.display =
       provider.info.name === connectedWallet ? "inline-block" : "none";
-
     walletBox.appendChild(button);
   });
 }
 
 function shortAddress(address) {
-  connectBtn.innerHTML = `${address.substring(0, 5)}...${address.substring(
-    address.length - 4,
-  )}`;
+  connectBtn.innerHTML = `${address.substring(0, 5)}...${address.substring(address.length - 4)}`;
   getEns(address);
 }
 
@@ -96,7 +72,6 @@ async function getEns(address) {
     if (!ensName) return;
 
     const ensAvatar = await mainnetProvider.getAvatar(ensName);
-
     connectBtn.innerHTML = ensAvatar
       ? `<img src="${ensAvatar}" style="border-radius: 50%">${ensName}`
       : ensName;
@@ -105,47 +80,42 @@ async function getEns(address) {
   }
 }
 
-function togglewalletList() {
-  walletList.classList.toggle("show");
-  chainList.classList.remove("show");
-  chevron.classList.remove("rotate");
+const toggleWalletList = () => walletList.classList.toggle("show");
 
-  const connected = localStorage.getItem("connected");
-
-  toggleDisplay(disconnectBtn, connected ? true : false);
-}
-
-function updateSettings() {
-  const hasProvider = providers.length > 0;
-  document.querySelector("#getWallets").style.display = hasProvider
+const updateSettings = () => {
+  document.querySelector("#getWallet").style.display = providers.length
     ? "none"
     : "block";
-}
+};
 
 function renderChainList() {
   chainList.innerHTML = "";
   const currentChainId = localStorage.getItem("currentChainId");
+  const isConnected = localStorage.getItem("connected") === "true";
 
-  Object.entries(networkConfigs).forEach(([networkName, networkConfig]) => {
-    if (networkConfig.showInUI) {
-      const button = createButton(networkConfig, () =>
-        switchNetwork(networkConfig),
-      );
+  Object.entries(networkConfigs)
+    .filter(([, config]) => config.showInUI)
+    .forEach(([networkName, networkConfig]) => {
+      const button = document.createElement("button");
       button.id = networkName;
-      const indicator = button.querySelector(".indicator");
-      indicator.style.display =
-        networkConfig.chainIdHex === currentChainId ? "inline-block" : "none";
+      button.title = networkConfig.name;
+      button.innerHTML = `<img src="${networkConfig.icon}" alt="${networkConfig.name}">`;
+      button.onclick = () => switchNetwork(networkConfig);
 
+      const indicator = document.createElement("span");
+      indicator.className = "indicator";
+      indicator.style.display =
+        isConnected && networkConfig.chainIdHex === currentChainId
+          ? "inline-block"
+          : "none";
+      button.appendChild(indicator);
       chainList.appendChild(button);
-    }
-  });
+    });
 }
 
 async function switchNetwork(newNetwork) {
-  chainList.classList.remove("show");
-  chevron.classList.remove("rotate");
   const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet"),
+    (p) => p.info.name === localStorage.getItem("lastWallet"),
   );
   try {
     await selectedProvider.provider.request({
@@ -153,7 +123,6 @@ async function switchNetwork(newNetwork) {
       params: [{ chainId: newNetwork.chainIdHex }],
     });
     localStorage.setItem("currentChainId", newNetwork.chainIdHex);
-
     renderChainList();
     updateNetworkStatus(newNetwork.chainIdHex);
   } catch (error) {
@@ -161,59 +130,17 @@ async function switchNetwork(newNetwork) {
   }
 }
 
-let networkWarning = false;
 function updateNetworkStatus(chainId) {
   const network = Object.values(networkConfigs).find(
     (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId,
   );
-  const isValidNetwork = network && network.showInUI;
 
-  networkIcon.src = isValidNetwork ? network.icon : "./assets/img/warning.svg";
-  toggleDisplay(overlay, !isValidNetwork);
-  localStorage[isValidNetwork ? "setItem" : "removeItem"](
-    "currentChainId",
-    chainId,
-  );
-
-  if (!isValidNetwork && !networkWarning) {
-    showNotification("Switch Network!", "warning", true);
-    networkWarning = true;
-  } else if (isValidNetwork) {
-    showNotification("");
-    networkWarning = false;
+  if (network?.showInUI) {
+    localStorage.setItem("currentChainId", chainId);
+  } else {
+    localStorage.removeItem("currentChainId");
   }
   renderChainList();
-}
-
-function showNotification(message, type = "info", isPermanent = false) {
-  const notificationBox = document.querySelector("#notificationBox");
-
-  document.querySelectorAll("#notification").forEach((notification) => {
-    notification.classList.remove("show");
-    setTimeout(() => notificationBox.removeChild(notification), 500);
-  });
-
-  if (!message) return;
-
-  const notification = document.createElement("div");
-  notification.id = "notification";
-  notification.classList.add(type);
-  notification.innerHTML = `<div class="notif-content">${message}</div>`;
-
-  notificationBox.prepend(notification);
-  notification.offsetHeight;
-  notification.classList.add("show");
-
-  if (!isPermanent) {
-    setTimeout(() => {
-      notification.classList.remove("show");
-      setTimeout(() => {
-        notificationBox.removeChild(notification);
-      }, 500);
-    }, 5000);
-  }
-
-  return notification;
 }
 
 async function disconnect() {
@@ -230,16 +157,14 @@ async function disconnect() {
   }
 
   localStorage.clear();
-  connectBtn.innerHTML = "Connect Wallet";
-  [(walletList, chainList, chevron, connectBtn)].forEach((el) => {
-    el.classList.remove("show", "rotate", "connected");
-  });
-  toggleDisplay(overlay, false);
+  connectBtn.innerHTML = "Connect";
+  [walletList, connectBtn].forEach((el) =>
+    el.classList.remove("show", "connected"),
+  );
+  updateNetworkStatus(networkConfigs.ethereum.chainIdHex);
   updateSettings();
   renderWallets();
   renderChainList();
-
-  disconnectBtn.style.display = "none";
 }
 
 function providerEvent(provider) {
@@ -258,55 +183,8 @@ function providerEvent(provider) {
     });
 }
 
-/***************************************************
- *              DARK/LIGHT MODE TOGGLE
- **************************************************/
-const themeManager = {
-  root: document.documentElement,
-  buttons: document.querySelectorAll(".theme-button"),
-
-  init() {
-    const savedTheme = localStorage.getItem("theme") || "system";
-    this.setTheme(savedTheme);
-
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (e) => {
-        if (localStorage.getItem("theme") === "system") {
-          this.root.classList.toggle("dark-mode", e.matches);
-        }
-      });
-
-    this.buttons.forEach((btn) =>
-      btn.addEventListener("click", () => this.setTheme(btn.dataset.theme)),
-    );
-  },
-
-  setTheme(theme) {
-    this.buttons.forEach((btn) =>
-      btn.setAttribute("data-active", btn.dataset.theme === theme),
-    );
-
-    if (theme === "system") {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      this.root.classList.toggle("dark-mode", prefersDark);
-    } else {
-      this.root.classList.toggle("dark-mode", theme === "dark");
-    }
-
-    localStorage.setItem("theme", theme);
-  },
-};
-
-document.addEventListener("DOMContentLoaded", () => themeManager.init());
-
-/***************************************************
- *              EVENT LISTENERS
- **************************************************/
 window.addEventListener("eip6963:announceProvider", (event) => {
-  const providerDetail = event.detail;
+  const { detail: providerDetail } = event;
   const providerName = providerDetail.info.name;
 
   if (!providers.some((p) => p.info.name === providerName)) {
@@ -322,40 +200,27 @@ window.addEventListener("eip6963:announceProvider", (event) => {
 });
 
 window.addEventListener("load", async () => {
-  const storedChainId = localStorage.getItem("currentChainId");
-  if (storedChainId) updateNetworkStatus(storedChainId);
+  const storedChainId =
+    localStorage.getItem("currentChainId") ||
+    networkConfigs.ethereum.chainIdHex;
+  updateNetworkStatus(storedChainId);
   updateSettings();
-  const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet"),
-  );
-  if (selectedProvider) providerEvent(selectedProvider);
+
+  if (localStorage.getItem("connected")) {
+    const selectedProvider = providers.find(
+      (p) => p.info.name === localStorage.getItem("lastWallet"),
+    );
+    if (selectedProvider) providerEvent(selectedProvider);
+  }
   renderChainList();
-
-  themeManager.root.classList.remove("no-flash");
-});
-
-networkBtn.addEventListener("click", (event) => {
-  event.stopPropagation();
-  chainList.classList.toggle("show");
-  chevron.classList.toggle("rotate");
-  walletList.classList.remove("show");
 });
 
 connectBtn.addEventListener("click", (event) => {
   event.stopPropagation();
-  togglewalletList();
+  toggleWalletList();
 });
 
-document.addEventListener("click", () => {
-  chainList.classList.remove("show");
-  walletList.classList.remove("show");
-  chevron.classList.remove("rotate");
-});
-
-chainList.addEventListener("click", (event) => event.stopPropagation());
-
+document.addEventListener("click", () => walletList.classList.remove("show"));
 walletList.addEventListener("click", (event) => event.stopPropagation());
-
-disconnectBtn.addEventListener("click", disconnect);
 
 window.dispatchEvent(new Event("eip6963:requestProvider"));

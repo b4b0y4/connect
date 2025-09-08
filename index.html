@@ -1,66 +1,30 @@
 <!doctype html>
-<html lang="en" class="no-flash">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Connect</title>
     <link rel="stylesheet" href="./assets/css/connect.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
   </head>
   <body>
     <div class="box">
       <a href="https://github.com/b4b0y4/connect" target="_blank">GitHub</a>
       <!--  connect  -->
       <div class="wrapper">
-        <div class="network">
-          <button id="networkBtn">
-            <img id="networkIcon" src="./img/eth.png" alt="Network Icon" />
-            <span><i class="fa-solid fa-chevron-down"></i></span>
-          </button>
-          <div class="chain-list" id="chainList"></div>
-        </div>
         <div class="connectivity">
-          <button id="connectBtn">Connect Wallet</button>
+          <button id="connectBtn">Connect</button>
           <div id="walletList" class="wallet-list">
-            <div id="settings">
-              <div class="theme-container">
-                <button class="theme-button" data-theme="light">
-                  <i class="fa-solid fa-sun"></i>
-                </button>
-                <button class="theme-button" data-theme="dark">
-                  <i class="fa-solid fa-moon"></i>
-                </button>
-                <button class="theme-button" data-theme="system">
-                  <i class="fa-solid fa-desktop"></i>
-                </button>
-              </div>
-              <button id="disconnect">
-                <i class="fa-solid fa-power-off"></i>
-              </button>
-            </div>
-            <div id="getWallets">
+            <div class="chain-list" id="chainList"></div>
+            <div id="getWallet">
               <a href="https://ethereum.org/en/wallets/" target="_blank"
                 >Get a Wallet!</a
               >
             </div>
             <div id="wallets"></div>
-            <!-- <button id="walletConnect"><img src="./img/walletConnect.svg">WalletConnect</button> -->
           </div>
         </div>
       </div>
       <!--  connect  -->
-      <div id="overlay"></div>
-      <div id="notificationBox">
-        <div id="notification">
-          <div class="notif-content"></div>
-        </div>
-      </div>
     </div>
 
     <script src="./js/script.js" type="module"></script>
