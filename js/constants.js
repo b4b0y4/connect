@@ -4,7 +4,7 @@ export const networkConfigs = {
     rpcUrl: "https://ethereum-rpc.publicnode.com",
     chainId: 1,
     chainIdHex: "0x1",
-    icon: "./img/eth.png",
+    icon: "./assets/img/eth.png",
     showInUI: true,
   },
   arbitrum: {
@@ -12,7 +12,7 @@ export const networkConfigs = {
     rpcUrl: "https://1rpc.io/arb",
     chainId: 42161,
     chainIdHex: "0xa4b1",
-    icon: "./img/arb.png",
+    icon: "./assets/img/arb.png",
     showInUI: true,
   },
   optimism: {
@@ -20,7 +20,7 @@ export const networkConfigs = {
     rpcUrl: "https://mainnet.optimism.io",
     chainId: 10,
     chainIdHex: "0xa",
-    icon: "./img/op.png",
+    icon: "./assets/img/op.png",
     showInUI: true,
   },
   base: {
@@ -28,7 +28,7 @@ export const networkConfigs = {
     rpcUrl: "https://base-rpc.publicnode.com",
     chainId: 8453,
     chainIdHex: "0x2105",
-    icon: "./img/base.png",
+    icon: "./assets/img/base.png",
     showInUI: true,
   },
   zksync: {
@@ -36,7 +36,7 @@ export const networkConfigs = {
     rpcUrl: "https://mainnet.era.zksync.io",
     chainId: 324,
     chainIdHex: "0x144",
-    icon: "./img/zksync.png",
+    icon: "./assets/img/zksync.png",
     showInUI: false,
   },
   scroll: {
@@ -44,7 +44,7 @@ export const networkConfigs = {
     rpcUrl: "https://rpc.scroll.io",
     chainId: 534352,
     chainIdHex: "0x82750",
-    icon: "./img/scroll.png",
+    icon: "./assets/img/scroll.png",
     showInUI: false,
   },
   zkevm: {
@@ -52,7 +52,7 @@ export const networkConfigs = {
     rpcUrl: "https://zkevm-rpc.com",
     chainId: 1101,
     chainIdHex: "0x44d",
-    icon: "./img/zkevm.png",
+    icon: "./assets/img/zkevm.png",
     showInUI: false,
   },
   sepolia: {
@@ -60,7 +60,7 @@ export const networkConfigs = {
     rpcUrl: "https://rpc.sepolia.org",
     chainId: 11155111,
     chainIdHex: "0xaa36a7",
-    icon: "./img/sepolia.png",
+    icon: "./assets/img/sepolia.png",
     showInUI: false,
   },
 };

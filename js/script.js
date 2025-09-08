@@ -1,4 +1,4 @@
-import { ethers } from "./ethers.min.js";
+import { ethers } from "./libs/ethers.min.js";
 import { networkConfigs } from "./constants.js";
 
 const networkBtn = document.querySelector("#networkBtn");
@@ -168,7 +168,7 @@ function updateNetworkStatus(chainId) {
   );
   const isValidNetwork = network && network.showInUI;
 
-  networkIcon.src = isValidNetwork ? network.icon : "./img/warning.svg";
+  networkIcon.src = isValidNetwork ? network.icon : "./assets/img/warning.svg";
   toggleDisplay(overlay, !isValidNetwork);
   localStorage[isValidNetwork ? "setItem" : "removeItem"](
     "currentChainId",
